@@ -1,16 +1,17 @@
-import logging, os
+import logging
+import os
+import db_connection as db
 
-from aiogram import Bot, Dispatcher, executor
-
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from dotenv import load_dotenv
+
 load_dotenv()
 
 API_TOKEN = os.environ.get('TOKEN')
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
