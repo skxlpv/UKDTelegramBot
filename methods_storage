@@ -2,30 +2,29 @@
 GET PRIMARY -> 0 IF NOT USER ELSE STR
             @dp.message_handler(regexp='Обране')
             async def get_primary(message: types.Message):
-                request = db.get_primary(message)
-                result = 'ERROR' if request == 0 else request
-                await message.answer(result, reply_markup=main_kb)
+                request = db.get_primary(message.chat['id'])
+                result = 'ERROR' if request in (0, '') else request
+                await message.answer(result, reply_markup=main_kb)b)
 
 
 
 SET PRIMARY -> NONE
             @dp.message_handler()
             async def test_primary_set(message: types.Message):
-                result = 'ERROR' if db.set_primary(message) == 0 else 'SET'
+                result = 'ERROR' if db.set_primary(message.chat['id'], message.text, 24, isTeacher=False) == 0 else 'SET'
                 await message.answer(result, reply_markup=main_kb)
 
 
 GET FAVORITES -> 0 IF NOT USER ELSE ARRAY
             @dp.message_handler(regexp='Обране')
             async def test_favorites_get(message: types.Message):
-                request = db.get_favorites(message)
+                request = db.get_favorites(message.chat['id'])
                 result = 'ERROR' if request in (0, []) else request
                 await message.answer(result, reply_markup=main_kb)
 
 
 
 SET FAVORITES -> NONE
-            @dp.message_handler()
             async def test_favorites_set(message: types.Message):
-                result = 'ERROR' if db.set_favorites(message) == 0 else 'SET'
+                result = 'ERROR' if db.set_favorites(message.chat['id'], message.text, 24, isTeacher=True) == 0 else 'SET'
                 await message.answer(result, reply_markup=main_kb)

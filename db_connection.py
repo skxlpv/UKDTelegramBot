@@ -13,55 +13,71 @@ def get_database():
     return client['user']
 
 
-def set_favorites(data):
+def set_favorites(user, group_name, group_id, isTeacher=False):
     client = get_database()
     col = client['schedule_picked']
 
-    if not col.find_one({"_id": data.chat["id"]}):
+    if not isTeacher:
+        insert_data = {'group_id': group_id,
+                       'group_name': group_name}
+    else:
+        insert_data = {'teacher_id': group_id,
+                       'teacher_name': group_name}
+
+    if not col.find_one({"_id": user}):
 
         user_data = {
-            '_id': data.chat['id'],
+            '_id': user,
             'primary': '',
-            'favorites': [data.text]
+            'favorites': [insert_data]
         }
         col.insert_one(user_data)
     else:
-        old_data = col.find_one({"_id": data.chat["id"]})
+        old_data = col.find_one({"_id": user})
+        if len(old_data['favorites']) >= 10:
+            return 0
         new = old_data['favorites']
-        new.append(data.text)
-        col.find_one_and_update({"_id": data.chat["id"]}, {'$set': {"favorites": new}})
+        new.append(insert_data)
+        col.find_one_and_update({"_id": user}, {'$set': {"favorites": new}})
 
 
-def set_primary(data):
+def set_primary(user, group_name, group_id, isTeacher=False):
     client = get_database()
     col = client['schedule_picked']
 
-    if not col.find_one({"_id": data.chat["id"]}):
+    if not isTeacher:
+        insert_data = {'group_id': group_id,
+                       'group_name': group_name}
+    else:
+        insert_data = {'teacher_id': group_id,
+                       'teacher_name': group_name}
+
+    if not col.find_one({"_id": user}):
         user_data = {
-            '_id': data.chat['id'],
-            'primary': data.text,
+            '_id': user,
+            'primary': insert_data,
             'favorites': []
         }
         col.insert_one(user_data)
     else:
-        col.find_one_and_update({"_id": data.chat["id"]}, {'$set': {"primary": data.text}})
+        col.find_one_and_update({"_id": user}, {'$set': {"primary": insert_data}})
 
 
-def get_favorites(data):
+def get_favorites(user):
     client = get_database()
     col = client['schedule_picked']
-    if not col.find_one({"_id": data.chat["id"]}):
+    if not col.find_one({"_id": user}):
         return 0
-    result = col.find_one({'_id': data.chat['id']})['favorites']
+    result = col.find_one({'_id': user})['favorites']
     return result
 
 
-def get_primary(data):
+def get_primary(user):
     client = get_database()
     col = client['schedule_picked']
-    if not col.find_one({"_id": data.chat["id"]}):
+    if not col.find_one({"_id": user}):
         return 0
-    primary = col.find_one({'_id': data.chat['id']})['primary']
+    primary = col.find_one({'_id': user})['primary']
     return primary
 
 
