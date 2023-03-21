@@ -24,27 +24,23 @@ def set_favorites(user, group_name, group_id, isTeacher=False):
         insert_data = {'teacher_id': group_id,
                        'teacher_name': group_name}
 
-    if not col.find_one({"_id": user}):
+    query = {'user_id': user, "favorites": {"$exists": True}}
+    result = col.find_one(query)
+    if len(result['favorites']) >= 10:
+        return 10
 
-        user_data = {
-            '_id': user,
-            'primary': '',
-            'favorites': [insert_data]
-        }
-        col.insert_one(user_data)
-    else:
-        old_data = col.find_one({"_id": user})
-        if len(old_data['favorites']) >= 10:
-            return 0
-        new = old_data['favorites']
-        new.append(insert_data)
-        col.find_one_and_update({"_id": user}, {'$set': {"favorites": new}})
+    col.update_one({'user_id': user},
+                   {'$push':
+                        {"favorites": insert_data}
+                    }, upsert=True)
+
+    return 1
 
 
 def set_primary(user, group_name, group_id, isTeacher=False):
     client = get_database()
     col = client['schedule_picked']
-
+    col.create_index('user_id', unique=True)
     if not isTeacher:
         insert_data = {'group_id': group_id,
                        'group_name': group_name}
@@ -52,33 +48,34 @@ def set_primary(user, group_name, group_id, isTeacher=False):
         insert_data = {'teacher_id': group_id,
                        'teacher_name': group_name}
 
-    if not col.find_one({"_id": user}):
-        user_data = {
-            '_id': user,
-            'primary': insert_data,
-            'favorites': []
-        }
-        col.insert_one(user_data)
-    else:
-        col.find_one_and_update({"_id": user}, {'$set': {"primary": insert_data}})
+    col.update_one({"user_id": user}, {'$set': {"primary": insert_data}}, upsert=True)
+    return 1
 
 
 def get_favorites(user):
     client = get_database()
     col = client['schedule_picked']
-    if not col.find_one({"_id": user}):
-        return 0
-    result = col.find_one({'_id': user})['favorites']
-    return result
+    query = {'user_id': user, "favorites": {"$exists": True}}
+    result = col.find_one(query)
+    if not result:
+        return 20
+    return result['favorites']
 
 
 def get_primary(user):
     client = get_database()
     col = client['schedule_picked']
-    if not col.find_one({"_id": user}):
-        return 0
-    primary = col.find_one({'_id': user})['primary']
-    return primary
+    query = {'user_id': user, "primary": {"$exists": True}}
+    result = col.find_one(query)
+    if not result:
+        return 20
+    return result['primary']
+
+
+def delete_favorite(user, group_name):
+    client = get_database()
+    col = client['schedule_picked']
+    pass
 
 
 def drop_db():

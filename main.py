@@ -1,6 +1,6 @@
 import logging
 import os
-import db_connection as db
+from UKDTelegramBot.Database import db_connection as db
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
