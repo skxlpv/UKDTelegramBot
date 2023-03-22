@@ -1,5 +1,6 @@
 from aiogram import executor
 from loader import dp
+from bot.handlers import search
 from bot.handlers import search, show_schedule
 
 search.register_search_handlers(dp)
