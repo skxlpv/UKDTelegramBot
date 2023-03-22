@@ -10,3 +10,6 @@ get_favorites
 
 get_primary
 20 - cannot get favorite or primary, not set
+
+delete_favorite
+1 - always, even if not deleted

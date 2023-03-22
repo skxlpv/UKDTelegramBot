@@ -16,7 +16,7 @@ def get_database():
 def set_favorites(user, group_name, group_id, isTeacher=False):
     client = get_database()
     col = client['schedule_picked']
-
+    col.create_index('user_id', unique=True)
     if not isTeacher:
         insert_data = {'group_id': group_id,
                        'group_name': group_name}
@@ -26,13 +26,16 @@ def set_favorites(user, group_name, group_id, isTeacher=False):
 
     query = {'user_id': user, "favorites": {"$exists": True}}
     result = col.find_one(query)
-    if len(result['favorites']) >= 10:
-        return 10
+    if result:
+        if len(result['favorites']) >= 10:
+            return 10
 
     col.update_one({'user_id': user},
                    {'$push':
-                        {"favorites": insert_data}
-                    }, upsert=True)
+                       {
+                           "favorites": insert_data
+                       }
+                   }, upsert=True)
 
     return 1
 
@@ -75,7 +78,16 @@ def get_primary(user):
 def delete_favorite(user, group_name):
     client = get_database()
     col = client['schedule_picked']
-    pass
+
+    col.update_one({'user_id': user},
+                   {'$pull':
+                       {
+                           "favorites":
+                               {'$or': [{'teacher_name': group_name}, {'group_name': group_name}]}
+                       }
+                   })
+
+    return 1
 
 
 def drop_db():
