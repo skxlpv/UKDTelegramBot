@@ -1,6 +1,5 @@
 import datetime
 import requests
-
 from aiogram import types, Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
@@ -133,21 +132,21 @@ async def group_handler(message: types.Message, state: FSMContext):
             return await message.answer(response, reply_markup=ReplyKeyboardRemove())
 
 
-@dp.message_handler(state='*')
-async def incorrect_message_handler(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-
-    if message.text and current_state is None:
-        await message.answer('Не зрозумів вас! Будь ласка, повторіть спробу.')
-
-    if current_state is not None and message.text and UserStates.specialty._state in current_state:
-        await message.answer('Будь ласка, оберіть спеціальність!')
-
-    if current_state is not None and message.text and UserStates.year._state in current_state:
-        await message.answer('Будь ласка, оберіть курс!')
-
-    if current_state is not None and message.text and UserStates.group._state in current_state:
-        await message.answer('Будь ласка, оберіть групу!')
+# @dp.message_handler(state='*')
+# async def incorrect_message_handler(message: types.Message, state: FSMContext):
+#     current_state = await state.get_state()
+#
+#     if message.text and current_state is None:
+#         await message.answer('Не зрозумів вас! Будь ласка, повторіть спробу.')
+#
+#     if current_state is not None and message.text and UserStates.specialty._state in current_state:
+#         await message.answer('Будь ласка, оберіть спеціальність!')
+#
+#     if current_state is not None and message.text and UserStates.year._state in current_state:
+#         await message.answer('Будь ласка, оберіть курс!')
+#
+#     if current_state is not None and message.text and UserStates.group._state in current_state:
+#         await message.answer('Будь ласка, оберіть групу!')
 
 
 def register_search_handlers(dispatcher: Dispatcher):
@@ -156,4 +155,4 @@ def register_search_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(specialty_handler)
     dispatcher.register_message_handler(year_handler)
     dispatcher.register_message_handler(group_handler)
-    dispatcher.register_message_handler(incorrect_message_handler)
+    # dispatcher.register_message_handler(incorrect_message_handler)
