@@ -1,5 +1,5 @@
 from bot.database.serializers import process_text, validate_favorites_quantity
-from connection import get_schedule_picked as get_collection
+from bot.database.connection import get_schedule_picked as get_collection
 
 
 def get_from_collection(user, action):
@@ -24,7 +24,7 @@ def set_favorites(user, group_name, isTeacher=False):
                                }
                             }, upsert=True)
             return 1
-        return validation
+        return insert_data
     return -1
 
 
