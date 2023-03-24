@@ -4,6 +4,8 @@ from bot.database.connection import get_schedule_picked as get_collection
 
 def get_from_collection(user, action):
     col = get_collection()
+    if action not in ('primary', 'favorites'):
+        return -100
     query = {'user_id': user, f"{action}": {"$exists": True}}
     result = col.find_one(query)
     if not result:
@@ -14,9 +16,9 @@ def get_from_collection(user, action):
 def set_favorites(user, group_name, isTeacher=False):
     col = get_collection()
     insert_data = process_text(group_name, isTeacher)
-    validation = validate_favorites_quantity(user)
-    if validation == 1:
-        if insert_data not in (-1, 'Not implemented'):
+    if insert_data not in (-1, 'Not implemented'):
+        validation = validate_favorites_quantity(user)
+        if validation == 1:
             col.update_one({'user_id': user},
                            {'$push':
                                {
@@ -24,8 +26,8 @@ def set_favorites(user, group_name, isTeacher=False):
                                }
                             }, upsert=True)
             return 1
-        return insert_data
-    return -1
+        return validation
+    return insert_data
 
 
 def set_primary(user, group_name, isTeacher=False):
