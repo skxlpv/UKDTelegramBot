@@ -2,34 +2,9 @@ from aiogram import Dispatcher, types
 import requests
 import time
 
-from aiogram.dispatcher.filters import CommandStart
-
-from bot.handlers.search import search_schedule
-from loader import bot, dp
+from loader import bot
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
-from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.utils import schedule_utils
-
-
-@dp.message_handler(CommandStart())
-async def start(message: types.Message):
-    await bot.send_message(chat_id=message.from_user.id,
-                           text=f'Вітаю, {message.from_user.first_name}!\n'
-                                f'Я -- офіційний бот-асистент від Університету Короля Данила!\n'
-                                f'Будь ласка, виберіть бажану опцію',
-                           reply_markup=menu_keyboard)
-
-
-@dp.message_handler(text=["Знайти розклад", "Мій розклад", "Обране"])
-async def first_answer(message: types.Message):
-    if message.text == 'Знайти розклад':
-        await search_schedule(message=message)
-        # await GeneralStates.search_schedule.set()
-    elif message.text == 'Мій розклад':
-        await my_schedule(message)
-    elif message.text == 'Обране':
-        await bot.send_message(chat_id=message.from_user.id, text="Favorites is not implemented")
-
 
 async def my_schedule(message: types.Message):
     time_str = time.strftime("%d.%m.%Y")
@@ -63,12 +38,11 @@ async def my_schedule(message: types.Message):
                            reply_markup=schedule_keyboard)
 
 
-@dp.message_handler()   # temporary solution for incorrect input handling
-async def incorrect_input(message: types.Message):
-    await message.answer('Некоректний ввід!')
-
+#
+# @dp.message_handler()   # temporary solution for incorrect input handling
+# async def incorrect_input(message: types.Message):
+#     await message.answer('Некоректний ввід!')
+#
 
 def register_schedule_handlers(dispatcher: Dispatcher):
-    dispatcher.register_message_handler(start)
-    dispatcher.register_message_handler(first_answer)
     dispatcher.register_message_handler(my_schedule)
