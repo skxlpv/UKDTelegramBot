@@ -17,7 +17,6 @@ from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
 from bot.utils.api_requests import departments
 
 
-@dp.message_handler(commands=['search'])
 async def search_schedule(message: types.Message):
     await message.answer('Оберіть параметри пошуку', reply_markup=search_keyboard)
 
@@ -128,26 +127,9 @@ async def group_handler(message: types.Message, state: FSMContext):
             group_id = departments[index]['ID']
 
             response = requests.get(
-                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=&end_date=&req_format=json&coding_mode=UTF8&bs=ok'
+                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=24.03.23&end_date=24.03.23&req_format=json&coding_mode=UTF8&bs=ok'
             ).json()
             return await message.answer(response, reply_markup=ReplyKeyboardRemove())
-
-
-@dp.message_handler(state='*')
-async def incorrect_message_handler(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-
-    if message.text and current_state is None:
-        await message.answer('Не зрозумів вас! Будь ласка, повторіть спробу.')
-
-    if current_state is not None and message.text and UserStates.specialty._state in current_state:
-        await message.answer('Будь ласка, оберіть спеціальність!')
-
-    if current_state is not None and message.text and UserStates.year._state in current_state:
-        await message.answer('Будь ласка, оберіть курс!')
-
-    if current_state is not None and message.text and UserStates.group._state in current_state:
-        await message.answer('Будь ласка, оберіть групу!')
 
 
 def register_search_handlers(dispatcher: Dispatcher):
@@ -156,4 +138,4 @@ def register_search_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(specialty_handler)
     dispatcher.register_message_handler(year_handler)
     dispatcher.register_message_handler(group_handler)
-    dispatcher.register_message_handler(incorrect_message_handler)
+    # dispatcher.register_message_handler(incorrect_message_handler)

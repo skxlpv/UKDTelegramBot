@@ -1,0 +1,15 @@
+set_favorites:
+1 - success
+-1 - cannot set favorite, limit reached
+
+set_primary:
+1 - success
+
+get_favorites
+-20 - cannot get favorite or primary, not set
+
+get_primary
+-20 - cannot get favorite or primary, not set
+
+delete_favorite
+1 - always, even if not deleted
