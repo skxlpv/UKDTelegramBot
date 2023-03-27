@@ -16,9 +16,9 @@ def get_from_collection(user, action):
 
 
 @update_lact_active
-def set_favorites(user, group_name, isTeacher=False):
+def set_favorites(user, group_id, isTeacher=False):
     col = get_collection()
-    insert_data = process_text(group_name, isTeacher)
+    insert_data = process_text(group_id, isTeacher)
     if insert_data not in (-1, 'Not implemented'):
         validation = validate_favorites_quantity(user)
         if validation == 1:
@@ -27,37 +27,46 @@ def set_favorites(user, group_name, isTeacher=False):
                                {
                                    "favorites": insert_data
                                }
-                            }, upsert=True)
+                           }, upsert=True)
             return 1
         return validation
     return insert_data
 
 
 @update_lact_active
-def set_primary(user, group_name, isTeacher=False):
+def set_primary(user, group_id, isTeacher=False):
     col = get_collection()
-    insert_data = process_text(group_name, isTeacher)
+    insert_data = process_text(group_id, isTeacher)
     if insert_data not in (-1, 'Not implemented'):
         col.update_one({"user_id": user},
                        {'$set':
                            {
                                "primary": insert_data
                            }
-                        }, upsert=True)
+                       }, upsert=True)
         return 1
     return -1
 
 
 @update_lact_active
-def delete_favorite(user, group_name):
+def delete_favorite(user, group_id, isTeacher=False):
     col = get_collection()
 
-    col.update_one({'user_id': user},
-                   {'$pull':
-                       {
-                           "favorites":
-                               {'$or': [{'teacher_name': group_name}, {'group_name': group_name}]}
-                       }
-                    })
+    if isTeacher:
+        col.update_one({'user_id': user},
+                       {'$pull':
+                           {
+                               "favorites":
+                                   {'teacher_id': group_id},
+                           }
+                        })
+    else:
+        col.update_one({'user_id': user},
+                       {'$pull':
+                           {
+                               "favorites":
+                                   {'group_id': group_id},
+                           }
+                        })
 
     return 1

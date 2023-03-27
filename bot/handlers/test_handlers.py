@@ -12,10 +12,10 @@ from bot.database.schedule_requests import set_favorites, set_primary, delete_fa
 #     await message.answer(a)
 
 
-@dp.message_handler(regexp='Обране')
-async def test_get_preferences(message: types.Message):
-    a = get_preferences(user=message.from_user.id)
-    await message.answer(a)
+# @dp.message_handler(regexp='Обране')
+# async def test_get_preferences(message: types.Message):
+#     a = get_preferences(user=message.from_user.id)
+#     await message.answer(a)
 
 
 # @dp.message_handler(regexp='Обране')
@@ -30,16 +30,16 @@ async def test_get_preferences(message: types.Message):
 #     await message.answer('Started')
 
 
-# @dp.message_handler()
+# @dp.message_handler(commands=['test'])
 # async def test_database_set_favorites(message: types.Message):
-#     a = set_favorites(message.from_user.id, message.text)
-#     await message.answer(a)
+#     a = set_favorites(message.from_user.id, message.text, isTeacher=True)
+#     await message.answer('a')
 
 
-# @dp.message_handler()
-# async def test_database_set_primary(message: types.Message):
-#     a = set_primary(message.from_user.id, message.text)
-#     await message.answer(a)
+@dp.message_handler(commands=['test'])
+async def test_database_set_primary(message: types.Message):
+    a = set_primary(message.from_user.id, 701, True)
+    await message.answer(a)
 
 
 # @dp.message_handler()
@@ -51,7 +51,7 @@ async def test_get_preferences(message: types.Message):
 def register_search_handlers(dispatcher: dp):
     # dispatcher.register_message_handler(test_database_set_favorites)
     # dispatcher.register_message_handler(test_database_get_favorites)
-    dispatcher.register_message_handler(test_get_preferences)
+    # dispatcher.register_message_handler(test_get_preferences)
     # dispatcher.register_message_handler(test_toggle_additional_courses)
-    # dispatcher.register_callback_query_handler(test_database_set_primary)
+    dispatcher.register_callback_query_handler(test_database_set_primary)
     # dispatcher.register_callback_query_handler(test_database_delete_favorite)

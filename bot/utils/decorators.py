@@ -1,7 +1,7 @@
 from bot.database.connection import get_user_pref as get_collection
 from datetime import datetime
 
-import bot.database.pref_requests as request
+from bot import database
 
 
 def update_lact_active(func):
@@ -12,7 +12,7 @@ def update_lact_active(func):
         date = datetime(today.year, today.month, today.day)
         user = kwargs['user'] if 'user' in kwargs else args[0]
         if col.find_one_and_update({'user_id': user}, {'$set': {'last_active': date}}) is None:
-            request.initialize_user_pref(user)
+            database.pref_requests.initialize_user_pref(user)
 
         return func(*args, **kwargs)
 

@@ -1,19 +1,24 @@
-from bot.utils.api_requests import departments
+from bot.utils.api_requests import departments, teachers
 from bot.database.connection import get_schedule_picked as get_collection
 from bot.database import schedule_requests as request
 
 
-def process_text(group_name, isTeacher=False):
-    group_name = group_name.lower()
+def process_text(group_id, isTeacher=False):
     if not isTeacher:
         for index in range(len(departments)):
-            if group_name.lower() == departments[index]['name'].lower():
+            if group_id == departments[index]['ID']:
                 group_name = departments[index]['name']
-                group_id = departments[index]['ID']
                 return {'group_id': group_id,
                         'group_name': group_name}
     else:
-        return 'Not implemented'
+        for index in range(len(teachers)):
+            all_teachers = teachers[index]['objects']
+            for i in range(len(all_teachers)):
+                teacher = teachers[index]['objects'][i]
+                if group_id == teacher['ID']:
+                    teacher_name = teacher['name'].replace(" (пог.)", "").replace("*", "")
+                    return {'teacher_id': group_id,
+                            'teacher_name': teacher_name}
     return -1
 
 
