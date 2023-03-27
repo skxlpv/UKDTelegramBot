@@ -19,7 +19,7 @@ def process_text(group_name, isTeacher=False):
 
 def validate_favorites_quantity(user):
     favorites = request.get_from_collection(user, 'favorites')
-    if favorites not in (-20, []):
+    if favorites not in (-20,):
         if len(favorites) >= 10:
             return -10
 

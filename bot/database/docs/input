@@ -1,10 +1,21 @@
-set_primary,                user id:        message.chat['id']
+SCHEDULE
+set_primary,                user:           message.from_user.id
 set_favorites               group_name:     str - teacher or group name
                             isTeacher       bool - False by default, True if teacher
 
 
-get_favorites               user id:        message.chat['id']
-get_primary
+get_from_collection         user:           message.from_user.id
+                            action:         str: 'primary' | 'favorites'
 
-delete_favorite             user id:        message.chat['id']
+
+delete_favorite             user:           message.from_user.id
                             group_name:     str - teacher or group name
+
+
+PREFERENCES
+initialize_user_pref        user:           message.from_user.id
+
+get_preferences             user:           message.from_user.id
+
+toggle_pref                 user:           message.from_user.id
+                            param:          str: 'additional_courses' | 'morning_schedule' | 'show_facts'
