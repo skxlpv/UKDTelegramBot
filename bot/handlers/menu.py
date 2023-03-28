@@ -1,6 +1,6 @@
 from aiogram import types, Dispatcher
 
-from bot.handlers import search
+from bot.handlers import search, favorites
 from bot.handlers.show_schedule import my_schedule
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
@@ -23,7 +23,9 @@ async def menu_handler(message: types.Message):
         await my_schedule(message=message)
 
     elif message.text == 'Обране':
-        await message.answer("Favorites is not implemented")
+        await UserStates.get_favorites.set()
+        await favorites.show_favorites(message=message)
+        # await message.answer("Favorites is not implemented")
 
 
 def register_menu_handlers(dispatcher: Dispatcher):
