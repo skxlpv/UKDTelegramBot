@@ -1,14 +1,9 @@
 from aiogram import types, Dispatcher
 
-from bot.database.schedule_requests import set_favorites
 from bot.handlers.menu import menu
 from bot.states.UserStates import UserStates
 from loader import dp
 
-# @dp.message_handler()
-# async def test_database_set_favorites(message: types.Message):
-#     a = set_favorites(message.from_user.id, message.text, isTeacher=False)
-#     await message.answer(a)
 @dp.message_handler(commands=['start'], state=None)
 async def start(message: types.Message):
     await message.answer(f'Вітаю, {message.from_user.first_name}!\n'
