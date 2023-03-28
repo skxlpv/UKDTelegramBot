@@ -1,20 +1,6 @@
 from bot.database.connection import get_user_pref as get_collection
-from datetime import datetime
 
-from bot.utils import update_lact_active
-
-DEFAULT_VALUES = {'additional_courses': False,
-                  'morning_schedule': True,
-                  'show_facts': False}
-
-
-def initialize_user_pref(user):
-    col = get_collection()
-    today = datetime.today()
-    date = datetime(today.year, today.month, today.day)
-    init_data = {'mutable': DEFAULT_VALUES,
-                 'last_active': date}
-    col.update_one({'user_id': user}, {'$set': init_data}, upsert=True)
+from bot.utils import update_lact_active, DEFAULT_VALUES
 
 
 @update_lact_active
