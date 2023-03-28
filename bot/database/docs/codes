@@ -1,15 +1,30 @@
-set_favorites:
+SCHEDULE
+get_from_collection
 1 - success
--1 - cannot set favorite, limit reached
+-20 - nor primary nor favorites are set
+-100 - not correct action
 
-set_primary:
+set_favorites
 1 - success
+-1 - wrong group or teacher name
+-10 - favorites limit reached
+'Not implemented' - temporary, teacher name validation in progress
 
-get_favorites
--20 - cannot get favorite or primary, not set
-
-get_primary
--20 - cannot get favorite or primary, not set
+set_primary
+1 - success
+-1 - wrong group or teacher name
+'Not implemented' - temporary, teacher name validation in progress
 
 delete_favorite
-1 - always, even if not deleted
+1 - always
+
+PREFERENCES
+initialize_user_pref
+nothing
+
+get_preferences
+nothing
+
+toggle_pref
+1 - success
+-100 - not correct action
