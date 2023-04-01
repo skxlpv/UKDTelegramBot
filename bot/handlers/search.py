@@ -125,29 +125,24 @@ async def year_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=UserStates.get_group)
 async def group_handler(message: types.Message):
-    if message.text not in groups_list:
-        await message.reply('Будь ласка, оберіть групу')
-        await UserStates.get_group.set()
+    groups_list.clear()
+    clear_keyboard(group_keyboard)
 
-    else:
-        groups_list.clear()
-        clear_keyboard(group_keyboard)
+    group = message.text
 
-        group = message.text
+    for index in range(len(departments)):
+        if group == departments[index]['name']:
+            group_id = departments[index]['ID']
 
-        for index in range(len(departments)):
-            if group == departments[index]['name']:
-                group_id = departments[index]['ID']
+            response = requests.get(
+                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
+                f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=24.03.23&end_date=24.03.23&req_'
+                f'format=json&coding_mode=UTF8&bs=ok'
+            ).json()
+            await message.answer(response, reply_markup=ReplyKeyboardRemove())
 
-                response = requests.get(
-                    f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
-                    f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=24.03.23&end_date=24.03.23&req_'
-                    f'format=json&coding_mode=UTF8&bs=ok'
-                ).json()
-                await message.answer(response, reply_markup=ReplyKeyboardRemove())
-
-        await UserStates.menu.set()
-        await menu(message=message)
+    await UserStates.menu.set()
+    await menu(message=message)
 
 
 # STUDENT GROUP SEARCH (by group title)
