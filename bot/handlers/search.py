@@ -8,7 +8,7 @@ from aiogram.dispatcher import FSMContext
 from bot.handlers.menu import menu
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
-from loader import dp
+from loader import dp, bot
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
@@ -16,7 +16,7 @@ from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
-                                    teacher_buttons_set, clear_keyboard, curr_year)
+                                    teacher_buttons_set, clear_keyboard, curr_year, get_specialty_titles)
 from bot.utils.api_requests import departments, teachers
 
 
@@ -125,24 +125,29 @@ async def year_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=UserStates.get_group)
 async def group_handler(message: types.Message):
-    groups_list.clear()
-    clear_keyboard(group_keyboard)
+    if message.text not in groups_list:
+        await message.reply('Будь ласка, оберіть групу')
+        await UserStates.get_group.set()
 
-    group = message.text
+    else:
+        groups_list.clear()
+        clear_keyboard(group_keyboard)
 
-    for index in range(len(departments)):
-        if group == departments[index]['name']:
-            group_id = departments[index]['ID']
+        group = message.text
 
-            response = requests.get(
-                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
-                f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=24.03.23&end_date=24.03.23&req_'
-                f'format=json&coding_mode=UTF8&bs=ok'
-            ).json()
-            await message.answer(response, reply_markup=ReplyKeyboardRemove())
+        for index in range(len(departments)):
+            if group == departments[index]['name']:
+                group_id = departments[index]['ID']
 
-    await UserStates.menu.set()
-    await menu(message=message)
+                response = requests.get(
+                    f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
+                    f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date=24.03.23&end_date=24.03.23&req_'
+                    f'format=json&coding_mode=UTF8&bs=ok'
+                ).json()
+                await message.answer(response, reply_markup=ReplyKeyboardRemove())
+
+        await UserStates.menu.set()
+        await menu(message=message)
 
 
 # STUDENT GROUP SEARCH (by group title)
