@@ -6,8 +6,8 @@ from aiogram import types, Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import set_primary
 from bot.handlers.menu import menu
+from bot.handlers.show_schedule import my_schedule
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
 from loader import dp
@@ -20,9 +20,7 @@ from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year)
 from bot.utils.api_requests import departments, teachers
-from bot.handlers.show_schedule import my_schedule
 
-# from bot.database import
 
 # GENERAL SEARCH
 @dp.message_handler(state=UserStates.search)
@@ -151,13 +149,13 @@ async def group_handler(message: types.Message, state: FSMContext):
             await my_schedule(message, state, group_id, time_str, student=True)
             # await message.answer(response, reply_markup=ReplyKeyboardRemove())
 
-    # await UserStates.menu.set()
-    # await menu(message=message)
+        # await UserStates.menu.set()
+        # await menu(message=message)
 
 
 # STUDENT GROUP SEARCH (by group title)
 @dp.message_handler(state=UserStates.manual_search)
-async def manual_search(message: types.Message, state:FSMContext):
+async def manual_search(message: types.Message, state: FSMContext):
     group_id = None
     group_title = message.text
     for index in range(len(departments)):
@@ -233,8 +231,8 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
 
                 response = requests.get(
                     f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=teacher&OBJ_ID={t_id}'
-                    f'&OBJ_name=&dep_name=&ros_text=separated&begin_date={time_str}&end_date={time_str}&req_format=json'
-                    f'&coding_mode=UTF8&bs=ok'
+                    '&OBJ_name=&dep_name=&ros_text=separated&begin_date=27.03.23&end_date=27.03.23&req_format=json'
+                    '&coding_mode=UTF8&bs=ok'
                 ).json()
                 await my_schedule(message, state, t_id, time_str, student=False)
 

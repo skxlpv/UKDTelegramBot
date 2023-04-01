@@ -1,5 +1,5 @@
-from bot.database.serializers import process_text, validate_favorites_quantity
 from bot.database.connection import get_schedule_picked as get_collection
+from bot.database.serializers import process_text, validate_favorites_quantity
 from bot.utils import update_lact_active
 
 

@@ -1,8 +1,8 @@
 import requests
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
-def my_schedule_func(group_id, time_str, student):
+def my_schedule_func(group_id, student, time_str=datetime.now().strftime('%d.%m.%Y')):
     if not student:
         url = f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=teacher&OBJ_ID={group_id}' \
               f'&OBJ_name=&dep_name=&ros_text=separated&begin_date={time_str}&end_date={time_str}' \

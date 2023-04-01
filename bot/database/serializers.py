@@ -1,6 +1,5 @@
-from bot.utils.api_requests import departments, teachers
-from bot.database.connection import get_schedule_picked as get_collection
 from bot.database import schedule_requests as request
+from bot.utils.api_requests import departments, teachers
 
 
 def process_text(group_id, isTeacher=False):

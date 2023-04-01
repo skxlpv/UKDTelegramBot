@@ -25,3 +25,4 @@ class UserStates(StatesGroup):
     # schedule state
     my_schedule = State()
     schedule_callback = State()
+    tip_callback = State()
