@@ -1,10 +1,12 @@
-from aiogram import Dispatcher, types
-import requests
 import time
 
-from loader import bot
+import requests
+from aiogram import Dispatcher, types
+
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.utils import schedule_utils
+from loader import bot
+
 
 async def my_schedule(message: types.Message):
     time_str = time.strftime("%d.%m.%Y")

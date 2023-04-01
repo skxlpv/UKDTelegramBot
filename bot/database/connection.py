@@ -1,14 +1,12 @@
-import os
-
-from pymongo import MongoClient
 from dotenv import load_dotenv
+from pymongo import MongoClient
+
+from configs import CONNECTION_STRING
 
 load_dotenv()
 
 
 def get_database():
-    CONNECTION_STRING = os.environ.get('DATABASE_URL')
-
     client = MongoClient(CONNECTION_STRING)
     return client['user']
 
