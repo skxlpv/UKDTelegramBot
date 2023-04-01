@@ -1,9 +1,8 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 
 from bot.states.UserStates import UserStates
-from loader import dp, bot
+from loader import dp
 
 
 @dp.message_handler(state='*', commands='cancel')

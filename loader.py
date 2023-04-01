@@ -1,14 +1,11 @@
 import logging
-import os
 
 from aiogram import Bot
-from aiogram.dispatcher import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from dotenv import load_dotenv
+from aiogram.dispatcher import Dispatcher
 
-load_dotenv()
-
-API_TOKEN = os.environ.get('TOKEN')
+from bot.worker.scheduler import scheduler
+from configs import API_TOKEN
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,3 +14,6 @@ logging.basicConfig(level=logging.INFO)
 storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
+
+# Starts the Scheduled jobs
+scheduler.start()

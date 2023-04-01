@@ -1,10 +1,11 @@
-from bot.database.connection import get_user_pref as get_collection
 from datetime import datetime
 
+from bot.database.connection import get_user_pref as get_collection
 
 DEFAULT_VALUES = {'additional_courses': False,
                   'morning_schedule': True,
                   'show_facts': False}
+
 
 def initialize_user_pref(user):
     col = get_collection()
