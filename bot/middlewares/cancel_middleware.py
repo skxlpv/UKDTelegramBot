@@ -1,7 +1,5 @@
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from bot.handlers.menu import menu
-from bot.handlers.restart import cancel_handler
 from bot.states.UserStates import UserStates
 
 

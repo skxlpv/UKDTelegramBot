@@ -1,8 +1,7 @@
 from aiogram import types
 
-from bot.database.pref_requests import get_preferences, toggle_pref
+from bot.database.schedule_requests import set_primary
 from loader import dp
-from bot.database.schedule_requests import set_favorites, set_primary, delete_favorite, get_from_collection
 
 
 # @dp.message_handler(regexp='Обране')

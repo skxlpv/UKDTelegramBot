@@ -16,7 +16,7 @@ from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
-                                    teacher_buttons_set, clear_keyboard, curr_year, get_specialty_titles)
+                                    teacher_buttons_set, clear_keyboard, curr_year)
 from bot.utils.api_requests import departments, teachers
 
 

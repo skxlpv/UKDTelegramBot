@@ -23,5 +23,6 @@ async def restart_handler(message: types.Message, state: FSMContext):
                         reply_markup=types.ReplyKeyboardRemove())
 
 
-def register_restart_handlers(dispatcher: Dispatcher):
+def register_action_handlers(dispatcher: Dispatcher):
+    dispatcher.register_message_handler(cancel_handler)
     dispatcher.register_message_handler(restart_handler)
