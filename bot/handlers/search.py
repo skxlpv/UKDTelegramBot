@@ -141,14 +141,7 @@ async def group_handler(message: types.Message, state: FSMContext):
                 f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date={time_str}&end_date={time_str}&req_'
                 f'format=json&coding_mode=UTF8&bs=ok'
             ).json()
-            # async with state.proxy() as response:
-            #     response['data'] = data
-            # set_primary(user=message.from_user.id,  group_id=group_id, )
-            await my_schedule(user_id=message.from_user.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
-            # await message.answer(response, reply_markup=ReplyKeyboardRemove())
-
-        # await UserStates.menu.set()
-        # await menu(message=message)
+            await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
 
 
 # STUDENT GROUP SEARCH (by group title)
@@ -168,7 +161,7 @@ async def manual_search(message: types.Message, state: FSMContext):
                 f'req_format=json&coding_mode=UTF8&bs=ok'
             ).json()
 
-            await my_schedule(user_id=message.from_user.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
+            await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
             # async with state.proxy() as response:
             #     response['data'] = data
             # await my_schedule(message, state)
@@ -227,7 +220,7 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 t_id = int(t['ID'])
                 time_str = time.strftime("%d.%m.%Y")
 
-                await my_schedule(user_id=message.from_user.id, state=state, group_id=t_id, time_str=time_str, isTeacher=True)
+                await my_schedule(chat_id=message.chat.id, state=state, group_id=t_id, time_str=time_str, isTeacher=True)
 
     if t_id is None:
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')

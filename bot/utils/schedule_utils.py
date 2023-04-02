@@ -146,12 +146,13 @@ async def get_teacher_or_group(primary, message, state):
         if 'teacher_name' in primary:
             isTeacher = True
             group_id = primary['teacher_id']
-            await show_schedule.my_schedule(message, state, group_id, isTeacher)
+            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
+                                            group_id=group_id, isTeacher=isTeacher)
         else:
             isTeacher = False
             group_id = primary['group_id']
-            await show_schedule.my_schedule(message, state, group_id, isTeacher)
-
+            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
+                                            group_id=group_id, isTeacher=isTeacher)
     else:  # if primary DOES NOT EXIST
         return False
 
