@@ -8,50 +8,15 @@ from bot.handlers.menu import menu
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
-from bot.utils.schedule_utils import my_schedule_func, my_schedule_big_func, name_func
+from bot.utils.schedule_utils import my_schedule_func, my_schedule_big_func, name_func, day_schedule_display, \
+    week_schedule_display
 from loader import dp
-
-
-async def week_schedule_display(week, callback, group, isTeacher, today=datetime.now()):
-    weekday = today.weekday()
-
-    if week == 'current':
-        current_or_next = 'поточний'
-        monday = today - timedelta(days=weekday)
-        current_friday = today - timedelta(days=(-weekday - 4))
-        friday = today - timedelta(days=(-weekday - 5))
-    elif week == 'next':
-        current_or_next = 'наступний'
-        monday = today - timedelta(days=weekday - 7)
-        current_friday = today - timedelta(days=(-weekday - 1))
-        friday = today - timedelta(days=(-weekday - 2))
-    else:
-        print('Week argument in week_schedule_display() is invalid. '
-              'Must be either "current" or "next"')
-        raise ValueError
-
-    name = name_func(group, isTeacher)
-    final_string_of_lessons = my_schedule_big_func(group, isTeacher, monday, friday)
-    await callback.message.edit_text(text=f"Розклад на {current_or_next} тиждень\nдля {name}, з "
-                                          f"{monday.strftime('%d.%m')} по {current_friday.strftime('%d.%m')}"
-                                          f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
-
-
-async def day_schedule_display(number, day_of_week, callback, group, isTeacher, today=datetime.now()):
-    weekday = today.weekday()
-
-    monday = today - timedelta(days=(weekday - number))
-    time_str = monday.strftime('%d.%m.%Y')
-    final_string_of_lessons = my_schedule_func(group_id=group, isTeacher=isTeacher, time_str=time_str)
-    await callback.message.edit_text(text=f'{day_of_week} - {monday.strftime("%d.%m")}\n'
-                                          f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
 
 
 @dp.callback_query_handler(state=UserStates.schedule_callback)
 async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     isTeacher = data.get('isTeacher')
-    # primary = get_from_collection(callback.from_user.id, 'primary')
     group = data.get('group_id')
 
     if callback.data == 'mn':

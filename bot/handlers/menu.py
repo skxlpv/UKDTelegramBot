@@ -7,22 +7,8 @@ from bot.handlers.show_schedule import my_schedule
 from bot.keyboards.inline.yes_or_not_keyboard import tip_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
+from bot.utils.schedule_utils import get_teacher_or_group
 from loader import dp
-
-
-async def get_teacher_or_group(primary, message, state):
-    if primary != -20:  # if primary EXISTS
-        if 'teacher_name' in primary:
-            isTeacher = True
-            group_id = primary['teacher_id']
-            await my_schedule(message, state, group_id, isTeacher)
-        else:
-            isTeacher = False
-            group_id = primary['group_id']
-            await my_schedule(message, state, group_id, isTeacher)
-
-    else:  # if primary DOES NOT EXIST
-        return False
 
 
 @dp.message_handler(state=UserStates.menu)
