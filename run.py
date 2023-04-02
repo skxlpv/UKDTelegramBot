@@ -1,6 +1,7 @@
 from aiogram import executor
-from loader import dp
+
 from bot.handlers import search, show_schedule, start, cancel_state, menu, schedule_answer
+from loader import dp
 
 start.register_start_handlers(dp)
 menu.register_menu_handlers(dp)
