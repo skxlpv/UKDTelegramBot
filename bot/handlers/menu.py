@@ -31,7 +31,7 @@ async def menu_handler(message: types.Message, state:FSMContext):
             else:
                 isTeacher = False
                 group_id = primary['group_id']
-            await my_schedule(message, state, group_id, isTeacher)
+            await my_schedule(user_id=message.from_user.id, state=state, group_id=group_id, isTeacher=isTeacher)
         else:
             await message.answer(text='От халепа! Схоже, ви ще не додали основний розклад! Підказати як це зробити?',
                                  reply_markup=tip_keyboard)
