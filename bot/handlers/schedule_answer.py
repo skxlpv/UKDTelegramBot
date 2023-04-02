@@ -16,7 +16,7 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
     data = await state.get_data()
     # group = data.get('group_id')
     isTeacher = data.get('isTeacher')
-    primary = get_from_collection(callback.message.from_user.id, 'primary')
+    primary = get_from_collection(callback.from_user.id, 'primary')
     if primary != -20:
         if 'teacher_name' in primary:
             isTeacher = True
