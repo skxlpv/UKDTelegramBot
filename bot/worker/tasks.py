@@ -10,8 +10,9 @@ bot = Bot(token=API_TOKEN)
 
 
 async def send_daily_schedule():
-    col = get_user_pref()
-    users = col.find()
+    col_pref = get_user_pref()
+    col_schedule = get_schedule_picked()
+    users = col_pref.find()
     for user in users:
         user_id = user['user_id']
         pref = user['mutable']['morning_schedule']

@@ -28,7 +28,7 @@ from loader import dp
 #     await message.answer('Started')
 
 
-# @dp.message_handler(commands=['test'])
+# @dp.message_handler()
 # async def test_database_set_favorites(message: types.Message):
 #     a = set_favorites(message.from_user.id, message.text, isTeacher=True)
 #     await message.answer('a')
@@ -47,7 +47,8 @@ async def test_database_set_primary(message: types.Message):
 
 
 def register_search_handlers(dispatcher: dp):
-    # dispatcher.register_message_handler(test_database_set_favorites)
+    #
+
     # dispatcher.register_message_handler(test_database_get_favorites)
     # dispatcher.register_message_handler(test_get_preferences)
     # dispatcher.register_message_handler(test_toggle_additional_courses)
