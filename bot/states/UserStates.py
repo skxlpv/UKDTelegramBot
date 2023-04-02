@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class UserStates(StatesGroup):
     # MENU STATES
     # general menu states
+    start = State()
     menu = State()
     menu_handler = State()
 
