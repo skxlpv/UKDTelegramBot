@@ -1,15 +1,10 @@
-from datetime import datetime, timedelta
-
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import set_primary, get_from_collection
+from bot.database.schedule_requests import set_primary
 from bot.handlers.menu import menu
-from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
-from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
-from bot.utils.schedule_utils import my_schedule_func, my_schedule_big_func, name_func, day_schedule_display, \
-    week_schedule_display
+from bot.utils.schedule_utils import day_schedule_display, week_schedule_display
 from loader import dp
 
 
@@ -55,7 +50,7 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
                                     group=group, isTeacher=isTeacher)
 
     elif callback.data == 'general_schedule':
-        set_primary(user=callback.from_user.id, group_id=group, isTeacher=True)  # ISSUE: str(group)
+        set_primary(user=callback.from_user.id, group_id=group, isTeacher=True)
         await callback.answer(text='Тепер цей розклад є основним')
 
     elif callback.data == 'favorite':
