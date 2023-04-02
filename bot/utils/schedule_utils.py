@@ -13,12 +13,12 @@ def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%
               f'group&OBJ_ID={group_id}&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&' \
               f'begin_date={time_str}&end_date={time_str}&req_format=json&coding_mode=UTF8&bs=ok'
     data = requests.get(url).json()
-    print(data)
     data = data['psrozklad_export']['roz_items']
     name = ''
     schedule_list = []
     for i in data:
         name = i['object']
+
     schedule_list.append(f'{name}\n—————')
     for i in data:
         r = f'{i["reservation"]}'
@@ -95,10 +95,12 @@ def my_schedule_big_func(group_id, isTeacher, firstday, lastday):
 
 
 def name_func(group_id, isTeacher):
+    time_str = ''
     day = datetime.now().weekday()
     if day == 5 or day == 6:
         time = datetime.now() - timedelta(days=2)
         time_str = time.strftime('%d.%m.%Y')
+
     if isTeacher:
         url = f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=teacher&OBJ_ID={group_id}' \
               f'&OBJ_name=&dep_name=&ros_text=separated&begin_date={time_str}&end_date={time_str}' \

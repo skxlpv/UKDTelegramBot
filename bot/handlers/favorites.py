@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from bot.database.schedule_requests import get_from_collection
+from bot.handlers import menu
 from bot.handlers.show_schedule import my_schedule
 from bot.keyboards.reply.favorite_keyboard import favorite_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
@@ -34,6 +35,7 @@ async def show_favorites(message: types.Message, state: FSMContext):
     else:
         await message.answer('Вибачте, ви не обрали жодної групи', reply_markup=favorite_keyboard)
         await UserStates.menu.set()
+        await menu.menu(message=message)
 
 
 @dp.message_handler(state=UserStates.get_favorite)
