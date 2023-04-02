@@ -17,34 +17,37 @@ def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%
               f'begin_date={time_str}&end_date={time_str}&req_format=json&coding_mode=UTF8&bs=ok'
     data = requests.get(url).json()
     data = data['psrozklad_export']['roz_items']
-    name = ''
-    schedule_list = []
-    for i in data:
-        name = i['object']
+    if data:
+        name = ''
+        schedule_list = []
+        for i in data:
+            name = i['object']
 
-    schedule_list.append(f'{name}\n—————')
-    for i in data:
-        r = f'{i["reservation"]}'
-        r = r.replace("<i> <b><small><font color=Navy>", "")
-        r = r.replace("</font></small></b></i>", "")
-        if i['type'] == "Л":
-            emoji = "📖"
-        else:
-            emoji = "⚒️"
-        if i['title'] == "":
-            schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
-        elif i['reservation'] == "":
-            schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                 f'{i["room"]}\n- - - - - - - - -')
-        else:
-            schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                 f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
+        schedule_list.append(f'{name}\n—————')
+        for i in data:
+            r = f'{i["reservation"]}'
+            r = r.replace("<i> <b><small><font color=Navy>", "")
+            r = r.replace("</font></small></b></i>", "")
+            if i['type'] == "Л":
+                emoji = "📖"
+            else:
+                emoji = "⚒️"
+            if i['title'] == "":
+                schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
+            elif i['reservation'] == "":
+                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                                     f'{i["room"]}\n- - - - - - - - -')
+            else:
+                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                                     f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
 
-    string_of_lessons = ''
-    for i in schedule_list:
-        string_of_lessons += i + '\n'
-    final_string_of_lessons = remove_last_line_from_string(string_of_lessons)
-    return final_string_of_lessons
+        string_of_lessons = ''
+        for i in schedule_list:
+            string_of_lessons += i + '\n'
+        final_string_of_lessons = remove_last_line_from_string(string_of_lessons)
+        return final_string_of_lessons
+    else:
+        return None
 
 
 def my_schedule_big_func(group_id, isTeacher, firstday, lastday):

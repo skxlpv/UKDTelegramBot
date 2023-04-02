@@ -51,14 +51,14 @@ async def get_favorite(message: types.Message, state: FSMContext):
             group_id = obj['group_id']
             await state.reset_state()
             await message.answer('Ваш розклад: ', reply_markup=menu_keyboard)
-            await my_schedule(message=message, state=state, group_id=group_id, isTeacher=isTeacher)
+            await my_schedule(user_id=message.from_user.id, state=state, group_id=group_id, isTeacher=isTeacher)
         elif 'teacher_name' in obj and obj['teacher_name'] == favorite:
             found = True
             isTeacher = True
             group_id = obj['teacher_id']
             await state.reset_state()
             await message.answer('Ваш розклад: ', reply_markup=menu_keyboard)
-            await my_schedule(message=message, state=state, group_id=group_id, isTeacher=isTeacher)
+            await my_schedule(user_id=message.from_user.id, state=state, group_id=group_id, isTeacher=isTeacher)
     if not found:
         await UserStates.show_favorites.set()
         await message.answer('Виберіть групу зі списку:', reply_markup=favorite_keyboard)

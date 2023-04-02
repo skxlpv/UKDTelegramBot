@@ -1,9 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiogram import Bot
+from aiogram.dispatcher import FSMContext
+from aiogram.utils.exceptions import ChatNotFound
 from dateutil.relativedelta import relativedelta
 
 from bot.database.connection import get_user_pref, get_schedule_picked
+from bot.database.schedule_requests import get_from_collection
+from bot.handlers.show_schedule import my_schedule
+from bot.utils.schedule_utils import my_schedule_func
 from configs import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
@@ -11,13 +16,32 @@ bot = Bot(token=API_TOKEN)
 
 async def send_daily_schedule():
     col_pref = get_user_pref()
-    col_schedule = get_schedule_picked()
+    # col_schedule = get_schedule_picked()
+
     users = col_pref.find()
+
     for user in users:
         user_id = user['user_id']
         pref = user['mutable']['morning_schedule']
         if pref is True:
-            await bot.send_message(user_id, f'Твій розклад на сьогодні: Not implemented YET')
+            user_primary = get_from_collection(user=user_id, action='primary')
+            if user_primary != -20:
+                if 'group_id' in user_primary:
+                    group_id = user_primary['group_id']
+                    isTeacher = False
+                else:
+                    group_id = user_primary['teacher_id']
+                    isTeacher = True
+                text = my_schedule_func(group_id=group_id, isTeacher=isTeacher)
+                if text is None:
+                    continue
+                else:
+                    try:
+                        await bot.send_message(chat_id=user_id, text=text)
+                    except ChatNotFound:
+                        continue
+            else:
+                continue
 
 
 async def database_cleanup():
