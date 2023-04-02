@@ -13,6 +13,8 @@ def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%
               f'group&OBJ_ID={group_id}&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&' \
               f'begin_date={time_str}&end_date={time_str}&req_format=json&coding_mode=UTF8&bs=ok'
     data = requests.get(url).json()
+    if 'error' in data['psrozklad_export']:
+        return data['psrozklad_export']['code']
     data = data['psrozklad_export']['roz_items']
     if data:
         name = ''

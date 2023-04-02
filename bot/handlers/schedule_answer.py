@@ -14,18 +14,8 @@ from loader import dp
 @dp.callback_query_handler(state=UserStates.schedule_callback)
 async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    # group = data.get('group_id')
     isTeacher = data.get('isTeacher')
-    primary = get_from_collection(callback.from_user.id, 'primary')
-    if primary != -20:
-        if 'teacher_name' in primary:
-            isTeacher = True
-            group = data.get('teacher_id')
-        else:
-            isTeacher = False
-            group = data.get('group_id')
-    else:
-        group = data.get('group_id')
+    group = data.get('group_id')
     dt = datetime.now()
     day = dt.weekday()
 
