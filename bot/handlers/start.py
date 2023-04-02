@@ -5,11 +5,6 @@ from bot.states.UserStates import UserStates
 from loader import dp
 
 
-# @dp.message_handler()
-# async def test_database_set_favorites(message: types.Message):
-#     a = set_favorites(message.from_user.id, message.text, isTeacher=True)
-#     await message.answer(a)
-
 @dp.message_handler(commands=['start'], state=None)
 async def start(message: types.Message):
     await message.answer(f'Вітаю, {message.from_user.first_name}!\n'
@@ -20,4 +15,3 @@ async def start(message: types.Message):
 
 def register_start_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(start)
-    # dispatcher.register_message_handler(test_database_set_favorites)
