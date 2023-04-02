@@ -1,16 +1,16 @@
 from aiogram import types, Dispatcher
+from aiogram.dispatcher import FSMContext
 
-from bot.handlers.menu import menu
-from bot.states.UserStates import UserStates
+from bot.handlers import menu
 from loader import dp
 
 
-@dp.message_handler(commands=['start'], state=None)
-async def start(message: types.Message):
+@dp.message_handler(commands='start', state='*')
+async def start(message: types.Message, state: FSMContext):
+    await state.finish()
     await message.answer(f'Вітаю, {message.from_user.first_name}!\n'
                          f'Я -- офіційний бот-асистент від Університету Короля Данила!\n')
-    await UserStates.menu.set()
-    await menu(message=message)
+    await menu.menu(message=message)
 
 
 def register_start_handlers(dispatcher: Dispatcher):

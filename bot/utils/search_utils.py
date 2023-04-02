@@ -1,7 +1,9 @@
 import datetime
 
-from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.utils.api_requests import departments
+from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
+from bot.keyboards.reply.course_keyboard import course_keyboard
+from bot.keyboards.reply.group_keyboard import group_keyboard
 
 teacher_list = []
 teacher_buttons_set = set()
@@ -12,6 +14,11 @@ courses_list = []
 groups_list = []
 stationary_list = []
 specialties_list = []
+list_of_all_keyboards = [
+    specialties_keyboard,
+    course_keyboard,
+    group_keyboard
+]
 
 
 def get_stationary():
@@ -52,3 +59,11 @@ def clear_keyboard(keyboard_to_be_cleaned):
     for key, value in keyboard_to_be_cleaned.values.copy().items():
         if key == 'keyboard':
             keyboard_to_be_cleaned.values[key].clear()
+
+
+def clear_all_keyboards(list_of_keyboards=None):
+    if list_of_keyboards is None:
+        list_of_keyboards = list_of_all_keyboards
+
+    for keyboard in list_of_keyboards:
+        clear_keyboard(keyboard)

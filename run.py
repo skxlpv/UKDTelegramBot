@@ -1,13 +1,17 @@
 from aiogram import executor
-
-from bot.handlers import search, show_schedule, start, cancel_state, menu, schedule_answer
+from bot.handlers import search, show_schedule, start, menu, schedule_answer, handle_any_input
+from bot.middlewares.menu_middleware import MenuMiddleware
 from loader import dp
 
+# Middlewares
+dp.middleware.setup(MenuMiddleware())
+
+# Handlers
+handle_any_input.register_any_input_handlers(dp)
 start.register_start_handlers(dp)
 menu.register_menu_handlers(dp)
 search.register_search_handlers(dp)
 show_schedule.register_schedule_handlers(dp)
-cancel_state.register_cancel_handlers(dp)
 schedule_answer.register_schedule_answer_handlers(dp)
 
 
