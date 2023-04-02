@@ -10,13 +10,13 @@ from bot.utils import schedule_utils
 from bot.states.UserStates import UserStates
 
 
-async def my_schedule(message: types.Message, state: FSMContext, group_id, time_str, student):
-    final_string_of_lessons = schedule_utils.my_schedule_func(group_id, student, time_str)
-    await bot.send_message(chat_id=message.from_user.id, text=f'f3ogiog4jg\n—————\n{final_string_of_lessons}',
+async def my_schedule(message: types.Message, state: FSMContext, group_id, time_str, isTeacher):
+    final_string_of_lessons = schedule_utils.my_schedule_func(group_id, isTeacher, time_str)
+    await bot.send_message(chat_id=message.from_user.id, text=f'{final_string_of_lessons}',
                            reply_markup=schedule_keyboard)
     async with state.proxy() as group:
         group['group_id'] = group_id
-        group['student'] = student
+        group['student'] = isTeacher
     await UserStates.schedule_callback.set()
 
 

@@ -32,10 +32,10 @@ async def menu_handler(message: types.Message, state:FSMContext):
         if primary != -20:
             time_str = datetime.now().strftime('%d.%m.%Y')
             if 'teacher_name' in primary:
-                student = False
+                isTeacher = True
             else:
-                student = True
-            await my_schedule(message, state, primary['group_id'], time_str, student)
+                isTeacher = False
+            await my_schedule(message, state, primary['group_id'], time_str, isTeacher)
         else:
             await message.answer(text='От халепа! Схоже, ви ще не додали основний розклад! Підказати як це зробити?',
                                  reply_markup=tip_keyboard)
