@@ -8,6 +8,10 @@ class UserStates(StatesGroup):
     menu = State()
     menu_handler = State()
 
+    # get favorites states
+    show_favorites = State()
+    get_favorite = State()
+
     # SEARCH STATES
     # general search states
     search = State()

@@ -1,7 +1,7 @@
 from aiogram import executor
-from loader import dp
-from bot.middlewares.menu_middleware import MenuMiddleware
 from bot.handlers import search, show_schedule, start, menu, schedule_answer, handle_any_input
+from bot.middlewares.menu_middleware import MenuMiddleware
+from loader import dp
 
 # Middlewares
 dp.middleware.setup(MenuMiddleware())

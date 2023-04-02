@@ -1,15 +1,13 @@
-from aiogram import Dispatcher, types
-import requests
 from datetime import datetime, timedelta
+
+from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
 from bot.database.schedule_requests import set_primary, get_from_collection
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
-
 from bot.states.UserStates import UserStates
 from bot.utils.schedule_utils import my_schedule_func, my_schedule_big_func, name_func
-
 from loader import dp
 
 
@@ -18,13 +16,14 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
     data = await state.get_data()
     # group = data.get('group_id')
     isTeacher = data.get('isTeacher')
-    primary = get_from_collection(callback.message.from_user.id, 'primary')
+    primary = get_from_collection(callback.from_user.id, 'primary')
     if primary != -20:
         if 'teacher_name' in primary:
             isTeacher = True
+            group = data.get('teacher_id')
         else:
             isTeacher = False
-        group = isTeacher
+            group = data.get('group_id')
     else:
         group = data.get('group_id')
     dt = datetime.now()

@@ -1,23 +1,23 @@
 import datetime
-import requests
 import time
 
+import requests
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from bot.handlers.show_schedule import my_schedule
-from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
-from bot.states.UserStates import UserStates
-from loader import dp
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
-from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
+from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
+from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
+from bot.states.UserStates import UserStates
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year, shrinked_specialties_list)
 from bot.utils.api_requests import departments, teachers
+from loader import dp
 
 
 # GENERAL SEARCH
@@ -149,16 +149,16 @@ async def group_handler(message: types.Message, state: FSMContext):
 
                 time_str = time.strftime("%d.%m.%Y")
 
-                data = requests.get(
-                    f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
-                    f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date={time_str}&end_date={time_str}&req_'
-                    f'format=json&coding_mode=UTF8&bs=ok'
-                ).json()
-                # async with state.proxy() as response:
-                #     response['data'] = data
-                # set_primary(user=message.from_user.id,  group_id=group_id, )
-                await my_schedule(message, state, group_id, time_str, isTeacher=False)
-                # await message.answer(response, reply_markup=ReplyKeyboardRemove())
+            data = requests.get(
+                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
+                f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date={time_str}&end_date={time_str}&req_'
+                f'format=json&coding_mode=UTF8&bs=ok'
+            ).json()
+            # async with state.proxy() as response:
+            #     response['data'] = data
+            # set_primary(user=message.from_user.id,  group_id=group_id, )
+            await my_schedule(message=message, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
+            # await message.answer(response, reply_markup=ReplyKeyboardRemove())
 
             # await UserStates.menu.set()
             # await menu(message=message)
@@ -240,18 +240,10 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 t_id = int(t['ID'])
                 time_str = time.strftime("%d.%m.%Y")
 
-                response = requests.get(
-                    f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=teacher&OBJ_ID={t_id}'
-                    '&OBJ_name=&dep_name=&ros_text=separated&begin_date=27.03.23&end_date=27.03.23&req_format=json'
-                    '&coding_mode=UTF8&bs=ok'
-                ).json()
-                await my_schedule(message, state, t_id, time_str, isTeacher=True)
+                await my_schedule(message=message, state=state, group_id=t_id, time_str=time_str, isTeacher=True)
 
     if t_id is None:
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')
-
-    # await UserStates.menu.set()
-    # await menu(message=message)
 
 
 def register_search_handlers(dispatcher: Dispatcher):

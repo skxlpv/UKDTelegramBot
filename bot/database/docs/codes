@@ -1,6 +1,5 @@
 SCHEDULE
 get_from_collection
-1 - success
 -20 - nor primary nor favorites are set
 -100 - not correct action
 

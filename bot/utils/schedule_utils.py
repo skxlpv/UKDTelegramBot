@@ -1,5 +1,6 @@
-import requests
 from datetime import datetime, timedelta
+
+import requests
 
 
 def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%m.%Y')):
@@ -111,6 +112,8 @@ def name_func(group_id, isTeacher):
     for i in data:
         name = i["object"]
     return name
+
+
 def name_day_of_week(count):
     if count == 0:
         name = "Понеділок"
