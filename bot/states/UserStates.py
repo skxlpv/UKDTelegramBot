@@ -24,3 +24,8 @@ class UserStates(StatesGroup):
     # teacher search states
     search_teacher = State()
     get_teacher_schedule = State()
+
+    # schedule state
+    my_schedule = State()
+    schedule_callback = State()
+    tip_callback = State()
