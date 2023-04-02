@@ -5,10 +5,10 @@ from aiogram import types, Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
 
-from bot.handlers.menu import menu
+from bot.handlers import menu
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
-from loader import dp, bot
+from loader import dp
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
@@ -142,7 +142,7 @@ async def group_handler(message: types.Message):
             await message.answer(response, reply_markup=ReplyKeyboardRemove())
 
     await UserStates.menu.set()
-    await menu(message=message)
+    await menu.menu(message=message)
 
 
 # STUDENT GROUP SEARCH (by group title)
@@ -161,7 +161,7 @@ async def manual_search(message: types.Message):
             ).json()
             await message.answer(response, reply_markup=ReplyKeyboardRemove())
             await UserStates.menu.set()
-            await menu(message=message)
+            await menu.menu(message=message)
 
     if group_id is None:
         await message.answer('Групу не знайдено! Спробуйте ще раз!')
@@ -224,7 +224,7 @@ async def get_teacher_schedule(message: types.Message):
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')
 
     await UserStates.menu.set()
-    await menu(message=message)
+    await menu.menu(message=message)
 
 
 def register_search_handlers(dispatcher: Dispatcher):

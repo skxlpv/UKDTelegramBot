@@ -12,9 +12,6 @@ async def any_input(message: types.Message, state: FSMContext):
     if current_state is None:
         await message.reply("Схоже, бот не увімкнений!\n"
                             "Будь ласка, надішліть команду /start")
-    elif message.text == '/cancel' and current_state == 'UserStates:search_options':
-        await message.reply('Дію було скасовано')
-        await menu(message=message)
 
 
 def register_any_input_handlers(dispatcher: Dispatcher):

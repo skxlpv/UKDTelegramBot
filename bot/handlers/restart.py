@@ -1,10 +1,15 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 
 from bot.handlers.menu import menu
 from bot.states.UserStates import UserStates
-from loader import dp, bot
+from loader import dp
+
+
+async def cancel_handler(message: types.Message):
+    await message.reply('Дію було скасовано')
+    await UserStates.menu.set()
+    await menu(message=message)
 
 
 @dp.message_handler(state='*', commands='restart')

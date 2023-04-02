@@ -1,7 +1,7 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
-from bot.handlers import search
+from bot.handlers.search import search_schedule
 from bot.handlers.show_schedule import my_schedule
 from bot.handlers.start import start
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
@@ -26,7 +26,7 @@ async def menu_handler(message: types.Message, state: FSMContext):
 
     if message.text == 'Знайти розклад':
         await UserStates.search.set()
-        await search.search_schedule(message=message)
+        await search_schedule(message=message)
 
     elif message.text == 'Мій розклад':
         await my_schedule(message=message)
