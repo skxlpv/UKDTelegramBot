@@ -21,3 +21,8 @@ def get_user_pref():
     client = get_database()
     col = client['user_preferences']
     return col
+
+
+def close_connection():
+    client = get_database().client
+    client.close()

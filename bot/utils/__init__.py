@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from bot.database.connection import get_user_pref as get_collection
+from bot.database.connection import get_user_pref as get_collection, close_connection
 
 DEFAULT_VALUES = {'additional_courses': False,
                   'morning_schedule': True,
@@ -14,6 +14,7 @@ def initialize_user_pref(user):
     init_data = {'mutable': DEFAULT_VALUES,
                  'last_active': date}
     col.update_one({'user_id': user}, {'$set': init_data}, upsert=True)
+    close_connection()
 
 
 def update_lact_active(func):
@@ -25,7 +26,7 @@ def update_lact_active(func):
         user = kwargs['user'] if 'user' in kwargs else args[0]
         if col.find_one_and_update({'user_id': user}, {'$set': {'last_active': date}}) is None:
             initialize_user_pref(user)
-
+        close_connection()
         return func(*args, **kwargs)
 
     return wrapper_func

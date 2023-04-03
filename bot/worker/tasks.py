@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import ChatNotFound
 from dateutil.relativedelta import relativedelta
 
-from bot.database.connection import get_user_pref, get_schedule_picked
+from bot.database.connection import get_user_pref, get_schedule_picked, close_connection
 from bot.database.schedule_requests import get_from_collection
 from bot.utils.schedule_utils import my_schedule_func
 from configs import API_TOKEN
@@ -15,7 +15,6 @@ bot = Bot(token=API_TOKEN)
 
 async def send_daily_schedule():
     col_pref = get_user_pref()
-    # col_schedule = get_schedule_picked()
 
     users = col_pref.find()
 
@@ -32,7 +31,7 @@ async def send_daily_schedule():
                     group_id = user_primary['teacher_id']
                     isTeacher = True
                 text = my_schedule_func(group_id=group_id, isTeacher=isTeacher)
-                if text is None:
+                if text is None or '90':
                     continue
                 else:
                     try:
@@ -56,3 +55,4 @@ async def database_cleanup():
         if last_active < data_six_month_before:
             col_schedule.find_one_and_delete({'user_id': user_id})
             col_pref.find_one_and_delete({'user_id': user_id})
+            close_connection()
