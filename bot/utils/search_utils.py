@@ -4,6 +4,7 @@ from bot.utils.api_requests import departments
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
+from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 
 teacher_list = []
 teacher_buttons_set = set()
@@ -17,7 +18,8 @@ specialties_list = []
 list_of_all_keyboards = [
     specialties_keyboard,
     course_keyboard,
-    group_keyboard
+    group_keyboard,
+    teacher_keyboard
 ]
 
 

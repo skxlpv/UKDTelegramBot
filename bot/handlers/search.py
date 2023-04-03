@@ -1,10 +1,9 @@
 import datetime
-import time
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
-from bot.handlers.show_schedule import my_schedule
+from bot.utils.render_schedule import render_schedule
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
@@ -141,27 +140,28 @@ async def group_handler(message: types.Message, state: FSMContext):
 
     else:
         groups_list.clear()
-        group = message.text
+        group_name = message.text
 
         for index in range(len(departments)):
-            if group == departments[index]['name']:
+            if group_name == departments[index]['name']:
                 group_id = departments[index]['ID']
-                time_str = time.strftime("%d.%m.%Y")
-                await my_schedule(chat_id=message.chat.id, state=state,
-                                  group_id=group_id, time_str=time_str, isTeacher=False)
+                today_date = datetime.date.today().strftime("%d.%m.%Y")
+                await render_schedule(search_name=group_name,search_id=group_id, begin_date=today_date,
+                                      end_date=today_date, isTeacher=False, message=message)
+                # await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
 
 
 # STUDENT GROUP SEARCH (by group title)
 @dp.message_handler(state=UserStates.manual_search)
 async def manual_search(message: types.Message, state: FSMContext):
     group_id = None
-    group_title = message.text
+    group_name = message.text
     for index in range(len(departments)):
-        if group_title.lower() == departments[index]['name'].lower():
+        if group_name.lower() == departments[index]['name'].lower():
             group_id = departments[index]['ID']
-            time_str = time.strftime("%d.%m.%Y")
-            await my_schedule(chat_id=message.chat.id, state=state,
-                              group_id=group_id, time_str=time_str, isTeacher=False)
+            today_date = datetime.date.today().strftime("%d.%m.%Y")
+            await render_schedule(search_name=group_name,search_id=group_id, begin_date=today_date,
+                                  end_date=today_date, isTeacher=False, message=message)
 
     if group_id is None:
         await message.answer('Групу не знайдено! Спробуйте ще раз!')
@@ -199,8 +199,8 @@ async def teacher_search(message: types.Message):
 
 @dp.message_handler(state=UserStates.get_teacher_schedule)
 async def get_teacher_schedule(message: types.Message, state: FSMContext):
-    t_id = None
-    t_name = message.text
+    teacher_id = None
+    teacher_name = message.text
 
     for index in range(len(teachers)):
         all_teachers = teachers[index]['objects']
@@ -210,14 +210,13 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
             name = teacher_object['I']
             patronymic = teacher_object['B']
 
-            if surname in t_name and name in t_name and patronymic in t_name:
-                t_id = int(teacher_object['ID'])
-                time_str = time.strftime("%d.%m.%Y")
+            if surname in teacher_name and name in teacher_name and patronymic in teacher_name:
+                teacher_id = int(teacher_object['ID'])
+                today_date = datetime.date.today().strftime("%d.%m.%Y")
+                await render_schedule(search_name=teacher_name, search_id=teacher_id, begin_date=today_date,
+                                      end_date=today_date, isTeacher=True, message=message)
 
-                await my_schedule(chat_id=message.chat.id, state=state,
-                                  group_id=t_id, time_str=time_str, isTeacher=True)
-
-    if t_id is None:
+    if teacher_id is None:
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')
 
 

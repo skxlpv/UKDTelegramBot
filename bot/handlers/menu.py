@@ -17,7 +17,6 @@ from loader import dp
 @dp.message_handler(state=UserStates.menu)
 async def menu(message: types.Message):
     clear_all_keyboards()
-
     await message.answer('Будь ласка, виберіть бажану опцію', reply_markup=menu_keyboard)
     await UserStates.menu_handler.set()
 
@@ -34,6 +33,7 @@ async def menu_handler(message: types.Message, state: FSMContext):
     elif message.text == 'Мій розклад':
         primary = get_from_collection(message.from_user.id, 'primary')
         hasPrimary = await get_teacher_or_group(primary, message, state)
+
 
         if hasPrimary is False:
             await message.answer(text='От халепа! Схоже, ви ще не додали основний розклад! '

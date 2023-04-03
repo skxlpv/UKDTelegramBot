@@ -2,8 +2,18 @@ from datetime import datetime, timedelta
 
 import requests
 
-from bot.handlers import show_schedule
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
+from bot.utils import render_schedule
+
+day_of_week_dict = {
+    0: 'Понеділок',
+    1: 'Вівторок',
+    2: 'Середа',
+    3: 'Четвер',
+    4: 'П\'ятниця',
+    5: 'Субота',
+    6: 'Неділя',
+}
 
 
 def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%m.%Y')):
@@ -37,11 +47,13 @@ def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%
             if i['title'] == "":
                 schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
             elif i['reservation'] == "":
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n- - - - - - - - -')
             else:
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
 
         string_of_lessons = ''
         for i in schedule_list:
@@ -87,11 +99,13 @@ def my_schedule_big_func(group_id, isTeacher, firstday, lastday):
             if i['title'] == "":
                 schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
             elif i['reservation'] == "":
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n- - - - - - - - -')
             else:
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
 
         fday = fday + timedelta(days=1)
         count += 1
@@ -148,13 +162,15 @@ async def get_teacher_or_group(primary, message, state):
         if 'teacher_name' in primary:
             isTeacher = True
             group_id = primary['teacher_id']
-            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
-                                            group_id=group_id, isTeacher=isTeacher)
+            today_date = datetime.today().strftime("%d.%m.%Y")
+            await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id, begin_date=today_date,
+                                  end_date=today_date, isTeacher=isTeacher, message=message)
         else:
             isTeacher = False
             group_id = primary['group_id']
-            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
-                                            group_id=group_id, isTeacher=isTeacher)
+            today_date = datetime.today().strftime("%d.%m.%Y")
+            await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id, begin_date=today_date,
+                                  end_date=today_date, isTeacher=isTeacher, message=message)
     else:  # if primary DOES NOT EXIST
         return False
 
