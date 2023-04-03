@@ -50,7 +50,7 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
                                     group=group, isTeacher=isTeacher)
 
     elif callback.data == 'general_schedule':
-        set_primary(user=callback.from_user.id, group_id=group, isTeacher=True)
+        set_primary(user=callback.from_user.id, group_id=group, isTeacher=isTeacher)
         await callback.answer(text='Тепер цей розклад є основним')
 
     elif callback.data == 'favorite':

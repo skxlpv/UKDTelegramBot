@@ -1,7 +1,6 @@
 import datetime
 import time
 
-import requests
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
@@ -15,7 +14,8 @@ from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
-                                    teacher_buttons_set, clear_keyboard, curr_year, shrinked_specialties_list)
+                                    teacher_buttons_set, clear_keyboard, curr_year,
+                                    shrinked_specialties_list)
 from bot.utils.api_requests import departments, teachers
 from loader import dp
 
@@ -146,15 +146,9 @@ async def group_handler(message: types.Message, state: FSMContext):
         for index in range(len(departments)):
             if group == departments[index]['name']:
                 group_id = departments[index]['ID']
-
                 time_str = time.strftime("%d.%m.%Y")
-
-            data = requests.get(
-                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
-                f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date={time_str}&end_date={time_str}&req_'
-                f'format=json&coding_mode=UTF8&bs=ok'
-            ).json()
-            await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
+                await my_schedule(chat_id=message.chat.id, state=state,
+                                  group_id=group_id, time_str=time_str, isTeacher=False)
 
 
 # STUDENT GROUP SEARCH (by group title)
@@ -165,15 +159,9 @@ async def manual_search(message: types.Message, state: FSMContext):
     for index in range(len(departments)):
         if group_title.lower() == departments[index]['name'].lower():
             group_id = departments[index]['ID']
-
             time_str = time.strftime("%d.%m.%Y")
-
-            data = requests.get(
-                f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode=group&OBJ_ID={group_id}'
-                f'&OBJ_name=&dep_name=&ros_text=separated&show_empty=yes&begin_date={time_str}&end_date={time_str}&'
-                f'req_format=json&coding_mode=UTF8&bs=ok'
-            ).json()
-            await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
+            await my_schedule(chat_id=message.chat.id, state=state,
+                              group_id=group_id, time_str=time_str, isTeacher=False)
 
     if group_id is None:
         await message.answer('Групу не знайдено! Спробуйте ще раз!')
@@ -217,16 +205,17 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
     for index in range(len(teachers)):
         all_teachers = teachers[index]['objects']
         for i in range(len(all_teachers)):
-            t = teachers[index]['objects'][i]
-            surname = t['P'].replace(" (пог.)", "").replace("*", "").replace(".", "")
-            name = t['I']
-            patronymic = t['B']
+            teacher_object = teachers[index]['objects'][i]
+            surname = teacher_object['P'].replace(" (пог.)", "").replace("*", "").replace(".", "")
+            name = teacher_object['I']
+            patronymic = teacher_object['B']
 
             if surname in t_name and name in t_name and patronymic in t_name:
-                t_id = int(t['ID'])
+                t_id = int(teacher_object['ID'])
                 time_str = time.strftime("%d.%m.%Y")
 
-                await my_schedule(chat_id=message.chat.id, state=state, group_id=t_id, time_str=time_str, isTeacher=True)
+                await my_schedule(chat_id=message.chat.id, state=state,
+                                  group_id=t_id, time_str=time_str, isTeacher=True)
 
     if t_id is None:
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')
