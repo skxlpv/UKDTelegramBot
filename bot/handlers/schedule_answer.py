@@ -1,93 +1,57 @@
-from datetime import datetime, timedelta
-
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import set_primary, get_from_collection
-from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
-from bot.keyboards.reply.menu_keyboard import menu_keyboard
+from bot.database.schedule_requests import set_primary
+from bot.handlers.menu import menu
 from bot.states.UserStates import UserStates
-from bot.utils.schedule_utils import my_schedule_func, my_schedule_big_func, name_func
+from bot.utils.schedule_utils import day_schedule_display, week_schedule_display
 from loader import dp
 
 
 @dp.callback_query_handler(state=UserStates.schedule_callback)
 async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    # group = data.get('group_id')
     isTeacher = data.get('isTeacher')
-    primary = get_from_collection(callback.from_user.id, 'primary')
-    if primary != -20:
-        if 'teacher_name' in primary:
-            isTeacher = True
-            group = data.get('teacher_id')
-        else:
-            isTeacher = False
-            group = data.get('group_id')
-    else:
-        group = data.get('group_id')
-    dt = datetime.now()
-    day = dt.weekday()
+    group = data.get('group_id')
 
-    if callback.data == 'mn':
-        monday = dt - timedelta(days=day)
-        time_str = monday.strftime('%d.%m.%Y')
-        final_string_of_lessons = my_schedule_func(group, isTeacher, time_str)
-        await callback.message.edit_text(text=f'Понеділок - {monday.strftime("%d.%m")}\n'
-                                              f'{final_string_of_lessons}',reply_markup=schedule_keyboard)
-    elif callback.data == 'ts':
-        tuesday = dt - timedelta(days=(day - 1))
-        time_str = tuesday.strftime('%d.%m.%Y')
-        final_string_of_lessons = my_schedule_func(group, isTeacher, time_str)
-        await callback.message.edit_text(text=f'Вівторок - {tuesday.strftime("%d.%m")}\n'
-                                              f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
-    elif callback.data == 'wd':
-        wednesday = dt - timedelta(days=(day - 2))
-        time_str = wednesday.strftime('%d.%m.%Y')
-        final_string_of_lessons = my_schedule_func(group, isTeacher, time_str)
-        await callback.message.edit_text(text=f'Середа - {wednesday.strftime("%d.%m")}\n'
-                                              f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
-    elif callback.data == 'th':
-        thursday = dt - timedelta(days=(day - 3))
-        time_str = thursday.strftime('%d.%m.%Y')
-        final_string_of_lessons = my_schedule_func(group, isTeacher, time_str)
-        await callback.message.edit_text(text=f'Четвер - {thursday.strftime("%d.%m")}\n'
-                                              f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
-    elif callback.data == 'fr':
-        friday = dt - timedelta(days=(day - 4))
-        time_str = friday.strftime('%d.%m.%Y')
-        final_string_of_lessons = my_schedule_func(group, isTeacher, time_str)
-        await callback.message.edit_text(text=f"П'ятниця - {friday.strftime('%d.%m')}\n"
-                                              f"{final_string_of_lessons}\n", reply_markup=schedule_keyboard)
-    elif callback.data == 'Week':
-        monday = dt - timedelta(days=day)
-        curfriday = dt - timedelta(days=(day - 4))
-        friday = dt - timedelta(days=(day - 5))
-        name = name_func(group, isTeacher)
-        final_string_of_lessons = my_schedule_big_func(group, isTeacher, monday, friday)
-        await callback.message.edit_text(text=f"Розклад на весь пточний тиждень\nдля {name}, з "
-                                              f"{monday.strftime('%d.%m')} по {curfriday.strftime('%d.%m')}"
-                                              f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
-    elif callback.data == 'Next':
-        monday = dt - timedelta(days=day - 7)
-        curfriday = dt - timedelta(days=(-day - 1))
-        friday = dt - timedelta(days=(-day - 2))
-        name = name_func(group, isTeacher)
-        final_string_of_lessons = my_schedule_big_func(group, isTeacher, monday, friday)
-        await callback.message.edit_text(text=f"Розклад на весь наступний тиждень\nдля {name}, з "
-                                              f"{monday.strftime('%d.%m')} по {curfriday.strftime('%d.%m')}"
-                                              f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
-    elif callback.data == 'general_schedule':
-        set_primary(callback.from_user.id, group, isTeacher)
-        await callback.answer(text='Тепер цей розклад є основним')
-        # await callback.answer(text='Цей розклад вже є основним')
-    elif callback.data == 'favorite':
-        await callback.message.answer("Favorites is not implemented")
-        # await callback.answer(text='Розклад було додано в обрані')
-        # await callback.answer(text='Розклад було видалено з обраних')
-    elif callback.data == 'menu':
-        await callback.message.answer(text="Ви увійшли в меню, будьласка виберіть дію", reply_markup=menu_keyboard)
-        await UserStates.menu_handler.set()
+    match callback.data:
+        case 'mn':
+            await callback.answer(text='Розклад на понеділок')
+            await day_schedule_display(number=0, day_of_week='Понеділок',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'ts':
+            await callback.answer(text='Розклад на вівторок')
+            await day_schedule_display(number=1, day_of_week='Вівторок',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'wd':
+            await callback.answer(text='Розклад на середу')
+            await day_schedule_display(number=2, day_of_week='Середа',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'th':
+            await callback.answer(text='Розклад на четвер')
+            await day_schedule_display(number=1, day_of_week='Четвер',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'fr':
+            await callback.answer(text='Розклад на п\'ятницю')
+            await day_schedule_display(number=1, day_of_week='П\'ятниця',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'week':
+            await callback.answer(text='Розклад на тиждень')
+            await week_schedule_display(week='current', callback=callback,
+                                        group=group, isTeacher=isTeacher)
+        case 'next_week':
+            await callback.answer(text='Розклад на наступний тиждень')
+            await week_schedule_display(week='next', callback=callback,
+                                        group=group, isTeacher=isTeacher)
+        case 'primary':
+            set_primary(user=callback.from_user.id, group_id=group, isTeacher=isTeacher)
+            await callback.answer(text='Тепер цей розклад є основним')
+        case 'favorite':
+            await callback.answer(text='Обрані поки не імплементовані!')
+        case 'menu':
+            await callback.message.reply('Ми знову у головному меню!')
+            await UserStates.menu.set()
+            await menu(message=callback.message)
 
 
 @dp.callback_query_handler(state=UserStates.tip_callback)
@@ -100,7 +64,9 @@ async def callback_tip(callback: types.CallbackQuery):
                                            'про обраний розклад в кілька тапів!', parse_mode='HTML')
         await UserStates.menu_handler.set()
     elif callback.data == 'no':
-        await UserStates.menu_handler.set()
+        await callback.message.reply('Ми знову у головному меню!')
+        await UserStates.menu.set()
+        await menu(message=callback.message)
 
 
 def register_schedule_answer_handlers(dispatcher: Dispatcher):

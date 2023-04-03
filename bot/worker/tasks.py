@@ -7,7 +7,6 @@ from dateutil.relativedelta import relativedelta
 
 from bot.database.connection import get_user_pref, get_schedule_picked
 from bot.database.schedule_requests import get_from_collection
-from bot.handlers.show_schedule import my_schedule
 from bot.utils.schedule_utils import my_schedule_func
 from configs import API_TOKEN
 
