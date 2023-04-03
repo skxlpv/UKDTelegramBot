@@ -14,52 +14,44 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
     isTeacher = data.get('isTeacher')
     group = data.get('group_id')
 
-    if callback.data == 'mn':
-        await callback.answer(text='Розклад на понеділок')
-        await day_schedule_display(number=0, day_of_week='Понеділок', callback=callback,
-                                   group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'ts':
-        await callback.answer(text='Розклад на вівторок')
-        await day_schedule_display(number=1, day_of_week='Вівторок', callback=callback,
-                                   group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'wd':
-        await callback.answer(text='Розклад на середу')
-        await day_schedule_display(number=2, day_of_week='Середа', callback=callback,
-                                   group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'th':
-        await callback.answer(text='Розклад на четвер')
-        await day_schedule_display(number=1, day_of_week='Четвер', callback=callback,
-                                   group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'fr':
-        await callback.answer(text='Розклад на п\'ятницю')
-        await day_schedule_display(number=1, day_of_week='П\'ятниця', callback=callback,
-                                   group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'Week':
-        await callback.answer(text='Розклад на тиждень')
-        await week_schedule_display(week='current', callback=callback,
-                                    group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'Next':
-        await callback.answer(text='Розклад на наступний тиждень')
-        await week_schedule_display(week='next', callback=callback,
-                                    group=group, isTeacher=isTeacher)
-
-    elif callback.data == 'general_schedule':
-        set_primary(user=callback.from_user.id, group_id=group, isTeacher=isTeacher)
-        await callback.answer(text='Тепер цей розклад є основним')
-
-    elif callback.data == 'favorite':
-        await callback.answer(text='Обрані поки не імплементовані!')
-
-    elif callback.data == 'menu':
-        await callback.message.reply('Ми знову у головному меню!')
-        await UserStates.menu.set()
-        await menu(message=callback.message)
+    match callback.data:
+        case 'mn':
+            await callback.answer(text='Розклад на понеділок')
+            await day_schedule_display(number=0, day_of_week='Понеділок',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'ts':
+            await callback.answer(text='Розклад на вівторок')
+            await day_schedule_display(number=1, day_of_week='Вівторок',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'wd':
+            await callback.answer(text='Розклад на середу')
+            await day_schedule_display(number=2, day_of_week='Середа',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'th':
+            await callback.answer(text='Розклад на четвер')
+            await day_schedule_display(number=1, day_of_week='Четвер',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'fr':
+            await callback.answer(text='Розклад на п\'ятницю')
+            await day_schedule_display(number=1, day_of_week='П\'ятниця',
+                                       callback=callback, group=group, isTeacher=isTeacher)
+        case 'week':
+            await callback.answer(text='Розклад на тиждень')
+            await week_schedule_display(week='current', callback=callback,
+                                        group=group, isTeacher=isTeacher)
+        case 'next_week':
+            await callback.answer(text='Розклад на наступний тиждень')
+            await week_schedule_display(week='next', callback=callback,
+                                        group=group, isTeacher=isTeacher)
+        case 'primary':
+            set_primary(user=callback.from_user.id, group_id=group, isTeacher=isTeacher)
+            await callback.answer(text='Тепер цей розклад є основним')
+        case 'favorite':
+            await callback.answer(text='Обрані поки не імплементовані!')
+        case 'menu':
+            await callback.message.reply('Ми знову у головному меню!')
+            await UserStates.menu.set()
+            await menu(message=callback.message)
 
 
 @dp.callback_query_handler(state=UserStates.tip_callback)
