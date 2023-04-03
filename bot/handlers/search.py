@@ -3,6 +3,7 @@ import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
+from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.utils.render_schedule import render_schedule
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
@@ -146,9 +147,12 @@ async def group_handler(message: types.Message, state: FSMContext):
             if group_name == departments[index]['name']:
                 group_id = departments[index]['ID']
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
-                await render_schedule(search_name=group_name,search_id=group_id, begin_date=today_date,
-                                      end_date=today_date, isTeacher=False, message=message)
-                # await my_schedule(chat_id=message.chat.id, state=state, group_id=group_id, time_str=time_str, isTeacher=False)
+                schedule = await render_schedule(search_name=group_name, search_id=group_id,
+                                                 begin_date=today_date, end_date=today_date,
+                                                 isTeacher=False, state=state)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+                await UserStates.schedule_callback.set()
+
 
 
 # STUDENT GROUP SEARCH (by group title)
@@ -160,8 +164,11 @@ async def manual_search(message: types.Message, state: FSMContext):
         if group_name.lower() == departments[index]['name'].lower():
             group_id = departments[index]['ID']
             today_date = datetime.date.today().strftime("%d.%m.%Y")
-            await render_schedule(search_name=group_name,search_id=group_id, begin_date=today_date,
-                                  end_date=today_date, isTeacher=False, message=message)
+            schedule = await render_schedule(search_name=group_name, search_id=group_id,
+                                             begin_date=today_date, end_date=today_date,
+                                             isTeacher=False, state=state)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            await UserStates.schedule_callback.set()
 
     if group_id is None:
         await message.answer('Групу не знайдено! Спробуйте ще раз!')
@@ -213,8 +220,11 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
             if surname in teacher_name and name in teacher_name and patronymic in teacher_name:
                 teacher_id = int(teacher_object['ID'])
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
-                await render_schedule(search_name=teacher_name, search_id=teacher_id, begin_date=today_date,
-                                      end_date=today_date, isTeacher=True, message=message)
+                schedule = await render_schedule(search_name=teacher_name, search_id=teacher_id,
+                                                 begin_date=today_date, end_date=today_date,
+                                                 isTeacher=True, state=state)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+                await UserStates.schedule_callback.set()
 
     if teacher_id is None:
         await message.answer('Вчителя не знайдено! Спробуйте ще раз!')

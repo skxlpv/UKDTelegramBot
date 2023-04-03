@@ -1,15 +1,18 @@
 from datetime import datetime
 
 import requests
-from aiogram import types
+from aiogram.dispatcher import FSMContext
 
 from bot.utils.schedule_utils import day_of_week_dict
 
 
 async def render_schedule(search_name, search_id, isTeacher, begin_date: datetime.date,
-                          end_date: datetime.date, message: types.Message):
+                          end_date: datetime.date, state: FSMContext):
     list_of_lessons = []
     message_of_lessons = ''
+    async with state.proxy() as group:
+        group['group_id'] = str(search_id)
+        group['isTeacher'] = isTeacher
 
     # perform request based on isTeacher arg
     if isTeacher:
@@ -54,5 +57,4 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
     for each in list_of_lessons:
         message_of_lessons += each + '\n\n'
 
-    await message.answer(message_of_lessons, parse_mode='HTML')
-
+    return message_of_lessons

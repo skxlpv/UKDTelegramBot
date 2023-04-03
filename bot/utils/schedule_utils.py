@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import requests
 
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
+from bot.states.UserStates import UserStates
 from bot.utils import render_schedule
 
 day_of_week_dict = {
@@ -163,14 +164,20 @@ async def get_teacher_or_group(primary, message, state):
             isTeacher = True
             group_id = primary['teacher_id']
             today_date = datetime.today().strftime("%d.%m.%Y")
-            await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id, begin_date=today_date,
-                                  end_date=today_date, isTeacher=isTeacher, message=message)
+            schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
+                                                             begin_date=today_date, end_date=today_date,
+                                                             isTeacher=isTeacher, state=state)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            await UserStates.schedule_callback.set()
         else:
             isTeacher = False
             group_id = primary['group_id']
             today_date = datetime.today().strftime("%d.%m.%Y")
-            await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id, begin_date=today_date,
-                                  end_date=today_date, isTeacher=isTeacher, message=message)
+            schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
+                                                             begin_date=today_date,
+                                                             end_date=today_date, isTeacher=isTeacher, state=state)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
         return False
 
@@ -200,15 +207,11 @@ async def week_schedule_display(week, callback, group, isTeacher, today=datetime
                                           f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
 
 
-async def day_schedule_display(number, day_of_week, callback, group, isTeacher, today=datetime.now()):
+async def day_schedule_display(number, day_of_week, callback, group_id, isTeacher, today=datetime.now()):
     weekday = today.weekday()
 
     monday = today - timedelta(days=(weekday - number))
     time_str = monday.strftime('%d.%m.%Y')
-    final_string_of_lessons = my_schedule_func(group_id=group, isTeacher=isTeacher, time_str=time_str)
+    final_string_of_lessons = my_schedule_func(group_id=group_id, isTeacher=isTeacher, time_str=time_str)
     await callback.message.edit_text(text=f'{day_of_week} - {monday.strftime("%d.%m")}\n'
                                           f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
-
-
-def remove_last_line_from_string(final_string_of_lessons):
-    return final_string_of_lessons[:final_string_of_lessons.rfind('\n- - - - - - - - -')]

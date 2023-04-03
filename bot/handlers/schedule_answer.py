@@ -11,45 +11,45 @@ from loader import dp
 @dp.callback_query_handler(state=UserStates.schedule_callback)
 async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    isTeacher = data.get('isTeacher')
-    group = data.get('group_id')
+    isTeacher = data['isTeacher']
+    group_id = data['group_id']
 
     match callback.data:
         case 'mn':
             await callback.answer(text='Розклад на понеділок')
             await day_schedule_display(number=0, day_of_week='Понеділок',
-                                       callback=callback, group=group, isTeacher=isTeacher)
+                                       callback=callback, group_id=group_id, isTeacher=isTeacher)
         case 'ts':
             await callback.answer(text='Розклад на вівторок')
             await day_schedule_display(number=1, day_of_week='Вівторок',
-                                       callback=callback, group=group, isTeacher=isTeacher)
+                                       callback=callback, group_id=group_id, isTeacher=isTeacher)
         case 'wd':
             await callback.answer(text='Розклад на середу')
             await day_schedule_display(number=2, day_of_week='Середа',
-                                       callback=callback, group=group, isTeacher=isTeacher)
+                                       callback=callback, group_id=group_id, isTeacher=isTeacher)
         case 'th':
             await callback.answer(text='Розклад на четвер')
             await day_schedule_display(number=1, day_of_week='Четвер',
-                                       callback=callback, group=group, isTeacher=isTeacher)
+                                       callback=callback, group_id=group_id, isTeacher=isTeacher)
         case 'fr':
             await callback.answer(text='Розклад на п\'ятницю')
             await day_schedule_display(number=1, day_of_week='П\'ятниця',
-                                       callback=callback, group=group, isTeacher=isTeacher)
+                                       callback=callback, group_id=group_id, isTeacher=isTeacher)
         case 'week':
             await callback.answer(text='Розклад на тиждень')
             await week_schedule_display(week='current', callback=callback,
-                                        group=group, isTeacher=isTeacher)
+                                        group_id=group_id, isTeacher=isTeacher)
         case 'next_week':
             await callback.answer(text='Розклад на наступний тиждень')
             await week_schedule_display(week='next', callback=callback,
-                                        group=group, isTeacher=isTeacher)
+                                        group=group_id, isTeacher=isTeacher)
         case 'primary':
-            set_primary(user=callback.from_user.id, group_id=group, isTeacher=isTeacher)
+            set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             await callback.answer(text='Тепер цей розклад є основним')
         case 'favorite':
             await callback.answer(text='Обрані поки не імплементовані!')
         case 'menu':
-            await callback.message.reply('Ми знову у головному меню!')
+            await callback.message.reply('<em><strong>Головне меню!</strong></em>', parse_mode='HTML')
             await UserStates.menu.set()
             await menu(message=callback.message)
 
@@ -64,7 +64,7 @@ async def callback_tip(callback: types.CallbackQuery):
                                            'про обраний розклад в кілька тапів!', parse_mode='HTML')
         await UserStates.menu_handler.set()
     elif callback.data == 'no':
-        await callback.message.reply('Ми знову у головному меню!')
+        await callback.message.reply('<em><strong>Головне меню!</strong></em>', parse_mode='HTML')
         await UserStates.menu.set()
         await menu(message=callback.message)
 
