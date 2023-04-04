@@ -1,4 +1,4 @@
-from bot.database.connection import get_user_pref as get_collection, close_connection
+from bot.database.connection import get_user_pref as get_collection
 
 from bot.utils import update_lact_active, DEFAULT_VALUES
 
@@ -7,7 +7,6 @@ from bot.utils import update_lact_active, DEFAULT_VALUES
 def get_preferences(user):
     col = get_collection()
     request = col.find_one({'user_id': user})
-    close_connection()
     return request['mutable']
 
 
@@ -35,7 +34,5 @@ def toggle_pref(user, param):
     }]
     if param in DEFAULT_VALUES:
         col.update_one(query, toggle)
-        close_connection()
         return 1
-    close_connection()
     return -100

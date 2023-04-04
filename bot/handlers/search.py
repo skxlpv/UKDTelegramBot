@@ -12,11 +12,11 @@ from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
+from bot.utils.api_requests import departments, teachers
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
                                     shrinked_specialties_list)
-from bot.utils.api_requests import departments, teachers
 from loader import dp
 
 
