@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
+import aiogram.utils.exceptions
 import requests
+from aiogram.dispatcher import FSMContext
 
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.states.UserStates import UserStates
@@ -182,8 +184,10 @@ async def get_teacher_or_group(primary, message, state):
         return False
 
 
-async def week_schedule_display(week, callback, group, isTeacher, today=datetime.now()):
+async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
     weekday = today.weekday()
+    data = await state.get_data()
+    search_name = data['search_name']
 
     if week == 'current':
         current_or_next = 'поточний'
@@ -200,18 +204,28 @@ async def week_schedule_display(week, callback, group, isTeacher, today=datetime
               'Must be either "current" or "next"')
         raise ValueError
 
-    name = name_func(group, isTeacher)
-    final_string_of_lessons = my_schedule_big_func(group, isTeacher, monday, friday)
-    await callback.message.edit_text(text=f"Розклад на {current_or_next} тиждень\nдля {name}, з "
-                                          f"{monday.strftime('%d.%m')} по {current_friday.strftime('%d.%m')}"
-                                          f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
+    schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
+                                                     begin_date=monday.strftime('%d.%m.%Y'),
+                                                     end_date=current_friday.strftime('%d.%m.%Y'),
+                                                     isTeacher=isTeacher, state=state)
+    try:
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+    except aiogram.utils.exceptions.MessageNotModified:
+        pass
 
 
-async def day_schedule_display(number, day_of_week, callback, group_id, isTeacher, today=datetime.now()):
+async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
     weekday = today.weekday()
+    data = await state.get_data()
+    search_name = data['search_name']
 
     monday = today - timedelta(days=(weekday - number))
-    time_str = monday.strftime('%d.%m.%Y')
-    final_string_of_lessons = my_schedule_func(group_id=group_id, isTeacher=isTeacher, time_str=time_str)
-    await callback.message.edit_text(text=f'{day_of_week} - {monday.strftime("%d.%m")}\n'
-                                          f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
+    date = monday.strftime('%d.%m.%Y')
+
+    schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
+                                                     begin_date=date, end_date=date,
+                                                     isTeacher=isTeacher, state=state)
+    try:
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+    except aiogram.utils.exceptions.MessageNotModified:
+        pass

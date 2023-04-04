@@ -2,6 +2,7 @@ import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardMarkup
 
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.utils.render_schedule import render_schedule
@@ -147,6 +148,7 @@ async def group_handler(message: types.Message, state: FSMContext):
             if group_name == departments[index]['name']:
                 group_id = departments[index]['ID']
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
+                await message.answer('Ваш розклад', reply_markup=ReplyKeyboardMarkup())
                 schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                                  begin_date=today_date, end_date=today_date,
                                                  isTeacher=False, state=state)
