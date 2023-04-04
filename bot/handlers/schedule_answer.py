@@ -42,8 +42,16 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
             set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             await callback.answer(text='Тепер цей розклад є основним')
         case 'favorite':
-            await callback.answer(text='Розклад було додано в обрані!')
-            set_favorites(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
+            favorites_status = set_favorites(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
+            match favorites_status:
+                case -11:
+                    await callback.answer('Розклад вже знаходиться у ваших обраних!')
+                case -10:
+                    await callback.answer('Неможливо додати розклад в обрані! '
+                                          'Перевищенно ліміт')
+                case 1:
+                    await callback.answer('Розклад був успішно доданий до обраних!')
+
         case 'menu':
             await callback.answer()
             await callback.message.reply('<em><strong>Головне меню!</strong></em>', parse_mode='HTML')
@@ -53,13 +61,18 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
 @dp.callback_query_handler(state=UserStates.tip_callback)
 async def callback_tip(callback: types.CallbackQuery):
     if callback.data == 'yes':
-        await callback.message.answer(text='Після повернення в <b>Головне Меню</b>, натисніть кнопку '
-                                           '<b>"Знайти розклад"</b>. Введіть дані спеціальності, року поступлення та '
-                                           'групи. Затім  в наступному меню оберіть пункт <b>"Позначити розклад '
-                                           'Основним"</b>.Після цього, ви зможете з легкістю переглядати інформацію '
-                                           'про обраний розклад в кілька тапів!', parse_mode='HTML')
+        await callback.answer()
+        await callback.message.answer(text='Після повернення в <b>Головне Меню</b>, '
+                                           'натисніть кнопку <b>"Знайти розклад"</b>.\n'
+                                           'Введіть або оберіть свою спеціальність, '
+                                           'рік поступлення та групу, або ж введіть П.І.Б. викладача.\n\n'
+                                           'Як щойно ваш розклад відобразиться, оберіть пункт '
+                                           '<b>"Позначити основним"</b>.\n\n'
+                                           'Виконавши ці кроки, ви зможете з легкістю переглядати потрібну інформацію '
+                                           'всього одним тапом!', parse_mode='HTML')
         await UserStates.menu_handler.set()
     elif callback.data == 'no':
+        await callback.answer()
         await callback.message.reply('<em><strong>Головне меню!</strong></em>', parse_mode='HTML')
         await UserStates.menu.set()
         await menu(message=callback.message)

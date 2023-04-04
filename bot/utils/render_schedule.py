@@ -27,9 +27,11 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
         f'&req_format=json&coding_mode=UTF8&bs=ok').json()
 
     # generate group title
-    day_of_week = datetime.strptime(begin_date, '%d.%m.%Y').weekday()
     today_lessons_list = obj['psrozklad_export']['roz_items']
     list_of_lessons.append(f"<code><u>{search_name}</u></code>")
+
+    schedule_statistics = f'_________________________________\n' \
+                          f'<code>Загальна кількість пар: {len(today_lessons_list)}</code>'
 
     # generate list of lessons
     if len(today_lessons_list) > 0:
@@ -71,6 +73,8 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
     # glue all the lessons into one single message
     for each in list_of_lessons:
         message_of_lessons += each + '\n'
+
+    message_of_lessons += schedule_statistics
 
     # return a single string of lessons
     return message_of_lessons

@@ -21,10 +21,26 @@ def process_text(group_id, isTeacher=False):
     return -1
 
 
-def validate_favorites_quantity(user):
+def validate_favorites_quantity(user, insert_data, isTeacher):
     favorites = request.get_from_collection(user, 'favorites')
     if favorites not in (-20,):
+        if isTeacher:
+            for each in range(len(favorites)):
+                try:
+                    teacher_name = favorites[each]['teacher_name']
+                except KeyError:
+                    teacher_name = None
+                if teacher_name is not None and insert_data['teacher_name'] == teacher_name:
+                    return -11
+        else:
+            for each in range(len(favorites)):
+                try:
+                    group_name = favorites[each]['group_name']
+                except KeyError:
+                    group_name = None
+                if group_name is not None and insert_data['group_name'] == group_name:
+                    return -11
+
         if len(favorites) >= 10:
             return -10
-
     return 1
