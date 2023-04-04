@@ -1,9 +1,22 @@
 from datetime import datetime, timedelta
 
+import aiogram.utils.exceptions
 import requests
+from aiogram.dispatcher import FSMContext
 
-from bot.handlers import show_schedule
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
+from bot.states.UserStates import UserStates
+from bot.utils import render_schedule
+
+day_of_week_dict = {
+    0: 'Понеділок',
+    1: 'Вівторок',
+    2: 'Середа',
+    3: 'Четвер',
+    4: 'П\'ятниця',
+    5: 'Субота',
+    6: 'Неділя',
+}
 
 
 def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%m.%Y')):
@@ -37,11 +50,13 @@ def my_schedule_func(group_id, isTeacher, time_str=datetime.now().strftime('%d.%
             if i['title'] == "":
                 schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
             elif i['reservation'] == "":
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n- - - - - - - - -')
             else:
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
 
         string_of_lessons = ''
         for i in schedule_list:
@@ -87,11 +102,13 @@ def my_schedule_big_func(group_id, isTeacher, firstday, lastday):
             if i['title'] == "":
                 schedule_list.append(f'🕑  {i["lesson_time"]}\n🌀  {r}\n- - - - - - - - -')
             elif i['reservation'] == "":
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n- - - - - - - - -')
             else:
-                schedule_list.append(f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
-                                     f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
+                schedule_list.append(
+                    f'🕑  {i["lesson_time"]}\n{emoji}  {i["title"]}, ({i["type"]})\n👨‍🏫  {i["teacher"]}  '
+                    f'{i["room"]}\n🌀  {r}\n- - - - - - - - -')
 
         fday = fday + timedelta(days=1)
         count += 1
@@ -148,51 +165,63 @@ async def get_teacher_or_group(primary, message, state):
         if 'teacher_name' in primary:
             isTeacher = True
             group_id = primary['teacher_id']
-            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
-                                            group_id=group_id, isTeacher=isTeacher)
+            today_date = datetime.today().strftime("%d.%m.%Y")
+            schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
+                                                             begin_date=today_date, end_date=today_date,
+                                                             isTeacher=isTeacher, state=state)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            await UserStates.schedule_callback.set()
         else:
             isTeacher = False
             group_id = primary['group_id']
-            await show_schedule.my_schedule(chat_id=message.chat.id, state=state,
-                                            group_id=group_id, isTeacher=isTeacher)
+            today_date = datetime.today().strftime("%d.%m.%Y")
+            schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
+                                                             begin_date=today_date,
+                                                             end_date=today_date, isTeacher=isTeacher, state=state)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
         return False
 
 
-async def week_schedule_display(week, callback, group, isTeacher, today=datetime.now()):
+async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
     weekday = today.weekday()
+    data = await state.get_data()
+    search_name = data['search_name']
 
     if week == 'current':
-        current_or_next = 'поточний'
         monday = today - timedelta(days=weekday)
         current_friday = today - timedelta(days=(-weekday - 4))
-        friday = today - timedelta(days=(-weekday - 5))
     elif week == 'next':
-        current_or_next = 'наступний'
         monday = today - timedelta(days=weekday - 7)
-        current_friday = today - timedelta(days=(-weekday - 1))
-        friday = today - timedelta(days=(-weekday - 2))
+        current_friday = monday + timedelta(days=4)
     else:
         print('Week argument in week_schedule_display() is invalid. '
               'Must be either "current" or "next"')
         raise ValueError
 
-    name = name_func(group, isTeacher)
-    final_string_of_lessons = my_schedule_big_func(group, isTeacher, monday, friday)
-    await callback.message.edit_text(text=f"Розклад на {current_or_next} тиждень\nдля {name}, з "
-                                          f"{monday.strftime('%d.%m')} по {current_friday.strftime('%d.%m')}"
-                                          f"\n—————\n\n{final_string_of_lessons}", reply_markup=schedule_keyboard)
+    schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
+                                                     begin_date=monday.strftime('%d.%m.%Y'),
+                                                     end_date=current_friday.strftime('%d.%m.%Y'),
+                                                     isTeacher=isTeacher, state=state)
+    try:
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+    except aiogram.utils.exceptions.MessageNotModified:
+        pass
 
 
-async def day_schedule_display(number, day_of_week, callback, group, isTeacher, today=datetime.now()):
+async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
     weekday = today.weekday()
+    data = await state.get_data()
+    search_name = data['search_name']
 
     monday = today - timedelta(days=(weekday - number))
-    time_str = monday.strftime('%d.%m.%Y')
-    final_string_of_lessons = my_schedule_func(group_id=group, isTeacher=isTeacher, time_str=time_str)
-    await callback.message.edit_text(text=f'{day_of_week} - {monday.strftime("%d.%m")}\n'
-                                          f'{final_string_of_lessons}', reply_markup=schedule_keyboard)
+    date = monday.strftime('%d.%m.%Y')
 
-
-def remove_last_line_from_string(final_string_of_lessons):
-    return final_string_of_lessons[:final_string_of_lessons.rfind('\n- - - - - - - - -')]
+    schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
+                                                     begin_date=date, end_date=date,
+                                                     isTeacher=isTeacher, state=state)
+    try:
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+    except aiogram.utils.exceptions.MessageNotModified:
+        pass

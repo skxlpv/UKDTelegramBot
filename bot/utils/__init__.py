@@ -25,7 +25,6 @@ def update_lact_active(func):
         user = kwargs['user'] if 'user' in kwargs else args[0]
         if col.find_one_and_update({'user_id': user}, {'$set': {'last_active': date}}) is None:
             initialize_user_pref(user)
-
         return func(*args, **kwargs)
 
     return wrapper_func

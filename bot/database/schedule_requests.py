@@ -20,7 +20,7 @@ def set_favorites(user, group_id, isTeacher=False):
     col = get_collection()
     insert_data = process_text(group_id, isTeacher)
     if insert_data not in (-1, 'Not implemented'):
-        validation = validate_favorites_quantity(user)
+        validation = validate_favorites_quantity(user, insert_data, isTeacher=isTeacher)
         if validation == 1:
             col.update_one({'user_id': user},
                            {'$push':
@@ -68,5 +68,4 @@ def delete_favorite(user, group_id, isTeacher=False):
                                    {'group_id': group_id},
                            }
                         })
-
     return 1

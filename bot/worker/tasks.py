@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from aiogram import Bot
-from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import ChatNotFound
 from dateutil.relativedelta import relativedelta
 
@@ -15,7 +14,6 @@ bot = Bot(token=API_TOKEN)
 
 async def send_daily_schedule():
     col_pref = get_user_pref()
-    # col_schedule = get_schedule_picked()
 
     users = col_pref.find()
 
@@ -32,7 +30,7 @@ async def send_daily_schedule():
                     group_id = user_primary['teacher_id']
                     isTeacher = True
                 text = my_schedule_func(group_id=group_id, isTeacher=isTeacher)
-                if text is None:
+                if text is None or text == '90':
                     continue
                 else:
                     try:
