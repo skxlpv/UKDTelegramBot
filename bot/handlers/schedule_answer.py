@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import set_primary
+from bot.database.schedule_requests import set_primary, set_favorites
 from bot.handlers.menu import menu
 from bot.states.UserStates import UserStates
 from bot.utils.schedule_utils import day_schedule_display, week_schedule_display
@@ -42,7 +42,8 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
             set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             await callback.answer(text='Тепер цей розклад є основним')
         case 'favorite':
-            await callback.answer(text='Обрані поки не імплементовані!')
+            await callback.answer(text='Розклад було додано в обрані!')
+            set_favorites(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
         case 'menu':
             await callback.answer()
             await callback.message.reply('<em><strong>Головне меню!</strong></em>', parse_mode='HTML')
