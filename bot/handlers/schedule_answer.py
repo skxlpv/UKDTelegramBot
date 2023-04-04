@@ -36,7 +36,7 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
                                         group_id=group_id, isTeacher=isTeacher, state=state)
         case 'next_week':
             await callback.answer(text='Розклад на наступний тиждень')
-            await week_schedule_display(week='current', callback=callback,
+            await week_schedule_display(week='next', callback=callback,
                                         group_id=group_id, isTeacher=isTeacher, state=state)
         case 'primary':
             set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)

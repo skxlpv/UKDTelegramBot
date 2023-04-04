@@ -190,15 +190,11 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
     search_name = data['search_name']
 
     if week == 'current':
-        current_or_next = 'поточний'
         monday = today - timedelta(days=weekday)
         current_friday = today - timedelta(days=(-weekday - 4))
-        friday = today - timedelta(days=(-weekday - 5))
     elif week == 'next':
-        current_or_next = 'наступний'
         monday = today - timedelta(days=weekday - 7)
-        current_friday = today - timedelta(days=(-weekday - 1))
-        friday = today - timedelta(days=(-weekday - 2))
+        current_friday = monday + timedelta(days=4)
     else:
         print('Week argument in week_schedule_display() is invalid. '
               'Must be either "current" or "next"')

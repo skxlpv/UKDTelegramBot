@@ -29,13 +29,12 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
     # generate group title
     day_of_week = datetime.strptime(begin_date, '%d.%m.%Y').weekday()
     today_lessons_list = obj['psrozklad_export']['roz_items']
-    list_of_lessons.append(f"<code><u>{search_name} | "
-                           f'{day_of_week_dict[day_of_week]}, {begin_date}</u></code>\n')
+    list_of_lessons.append(f"<code><u>{search_name}</u></code>")
 
     # generate list of lessons
     if len(today_lessons_list) > 0:
         day_of_week = 0
-        current_date = begin_date
+        current_date = 0
 
         # get values
         for lesson_index in range(len(today_lessons_list)):
