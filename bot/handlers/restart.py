@@ -1,8 +1,6 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
-from bot.handlers.menu import menu
-from bot.states.UserStates import UserStates
 from loader import dp
 
 

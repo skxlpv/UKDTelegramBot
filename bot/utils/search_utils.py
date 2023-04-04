@@ -1,10 +1,10 @@
 import datetime
 
-from bot.utils.api_requests import departments
-from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
+from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
+from bot.utils.api_requests import departments
 
 teacher_list = []
 teacher_buttons_set = set()

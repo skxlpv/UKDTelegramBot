@@ -1,13 +1,12 @@
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
-from configs import CONNECTION_STRING
+from bot.database import client
 
 load_dotenv()
 
 
 def get_database():
-    client = MongoClient(CONNECTION_STRING)
+
     return client['user']
 
 

@@ -68,5 +68,4 @@ def delete_favorite(user, group_id, isTeacher=False):
                                    {'group_id': group_id},
                            }
                         })
-
     return 1

@@ -4,13 +4,11 @@ from aiogram.dispatcher import FSMContext
 from bot.database.schedule_requests import get_from_collection
 from bot.handlers import search, favorites
 from bot.handlers import start
-
 from bot.keyboards.inline.yes_or_not_keyboard import tip_keyboard
-from bot.utils.search_utils import clear_all_keyboards
-
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils.schedule_utils import get_teacher_or_group
+from bot.utils.search_utils import clear_all_keyboards
 from loader import dp
 
 
