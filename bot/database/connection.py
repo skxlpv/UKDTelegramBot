@@ -6,7 +6,6 @@ load_dotenv()
 
 
 def get_database():
-
     return client['user']
 
 
