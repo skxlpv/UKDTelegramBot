@@ -4,7 +4,7 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from bot.database.schedule_requests import delete_favorite
-from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
+from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils import schedule_utils
@@ -22,8 +22,8 @@ async def my_schedule(chat_id, state: FSMContext, group_id, isTeacher, time_str=
     else:
         if final_string_of_lessons is None:
             final_string_of_lessons = 'Цього дня у вас немає пар. Відпочивайте!'
-        await bot.send_message(chat_id=chat_id, text=f'{final_string_of_lessons}',
-                               reply_markup=schedule_keyboard)
+        keyboard = get_schedule_keyboard(user=chat_id, group_id=group_id, isTeacher=isTeacher)
+        await bot.send_message(chat_id=chat_id, text=f'{final_string_of_lessons}', reply_markup=keyboard)
         async with state.proxy() as group:
             group['group_id'] = group_id
             group['isTeacher'] = isTeacher

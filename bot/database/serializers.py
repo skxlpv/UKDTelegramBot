@@ -22,24 +22,14 @@ def process_text(group_id, isTeacher=False):
 
 
 def validate_favorites_quantity(user, insert_data, isTeacher):
+    if isTeacher:
+        group_id = insert_data['teacher_id']
+    else:
+        group_id = insert_data['group_id']
+    if request.get_one_if_exist(user=user, group_id=group_id, isTeacher=isTeacher, action='favorites'):
+        return -11
     favorites = request.get_from_collection(user, 'favorites')
     if favorites not in (-20,):
-        if isTeacher:
-            for each in range(len(favorites)):
-                try:
-                    teacher_name = favorites[each]['teacher_name']
-                except KeyError:
-                    teacher_name = None
-                if teacher_name is not None and insert_data['teacher_name'] == teacher_name:
-                    return -11
-        else:
-            for each in range(len(favorites)):
-                try:
-                    group_name = favorites[each]['group_name']
-                except KeyError:
-                    group_name = None
-                if group_name is not None and insert_data['group_name'] == group_name:
-                    return -11
 
         if len(favorites) >= 10:
             return -10

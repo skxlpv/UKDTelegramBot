@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import requests
 from aiogram.dispatcher import FSMContext
@@ -8,14 +8,25 @@ from bot.utils.schedule_utils import day_of_week_dict
 
 async def render_schedule(search_name, search_id, isTeacher, begin_date: datetime.date,
                           end_date: datetime.date, state: FSMContext):
-    list_of_lessons = []
-    message_of_lessons = ''
-    break_line = '_________________________________'
-    async with state.proxy() as data:   # put variables in storage
+    async with state.proxy() as data:  # put variables in storage
         data['search_name'] = search_name
         data['group_id'] = str(search_id)
         data['isTeacher'] = isTeacher
 
+    schedule = get_schedule(search_name=search_name, search_id=search_id, isTeacher=isTeacher,
+                            begin_date=begin_date, end_date=end_date)
+    if schedule is None:
+        schedule = ''
+        schedule += f"<code><u>{search_name}</u></code>\n"
+        schedule += 'Цього дня у вас немає пар, хорошого відпочинку!'
+    return schedule
+
+
+def get_schedule(search_name, search_id, isTeacher,
+                 begin_date=datetime.now().strftime('%d.%m.%Y'), end_date=datetime.now().strftime('%d.%m.%Y')):
+    list_of_lessons = []
+    message_of_lessons = ''
+    break_line = '_________________________________'
     # perform request based on isTeacher arg
     if isTeacher:
         request_mode = 'teacher'
@@ -25,6 +36,9 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
         f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode={request_mode}'
         f'&OBJ_ID={search_id}&OBJ_name=&dep_name=&ros_text=separated&begin_date={begin_date}&end_date={end_date}'
         f'&req_format=json&coding_mode=UTF8&bs=ok').json()
+
+    if 'error' in obj['psrozklad_export']:
+        return obj['psrozklad_export']['code']
 
     # generate group title
     today_lessons_list = obj['psrozklad_export']['roz_items']
@@ -68,7 +82,7 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
             list_of_lessons.append(lesson)
 
     else:
-        list_of_lessons.append('Цього дня у вас немає пар, хорошого відпочинку!')
+        return None
 
     # glue all the lessons into one single message
     for each in list_of_lessons:
