@@ -17,13 +17,13 @@ from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
                                     shrinked_specialties_list)
-from loader import dp
+from loader import dp, bot
 
 
 # GENERAL SEARCH
 @dp.message_handler(state=UserStates.search)
 async def search_schedule(message: types.Message):
-    await message.answer('Оберіть параметри пошуку розкладу', reply_markup=search_keyboard)
+    await message.answer('Будь ласка, оберіть параметри пошуку розкладу', reply_markup=search_keyboard)
     await UserStates.search_options.set()
 
 
@@ -45,7 +45,7 @@ async def search_options(call: types.CallbackQuery):
 
     if call.data == 'teacher':
         await call.message.delete()
-        await call.message.answer("Введіть П.І.Б.")
+        await call.message.answer("Введіть П.І.Б. викладача/-ки")
         await UserStates.search_teacher.set()
 
 
