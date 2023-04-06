@@ -6,6 +6,7 @@ class UserStates(StatesGroup):
     # general menu states
     menu = State()
     menu_handler = State()
+    settings = State()
 
     # get favorites states
     show_favorites = State()
