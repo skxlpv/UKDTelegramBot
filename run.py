@@ -1,18 +1,22 @@
 from aiogram import executor
-from bot.handlers import search, show_schedule, start, menu, schedule_answer, handle_any_input
-from bot.middlewares.menu_middleware import MenuMiddleware
+from bot.handlers import (search, start, menu, settings,
+                          schedule_buttons_handler,
+                          handle_start_error)
+from bot.middlewares.cancel_middleware import CancelMiddleware
+from bot.middlewares.settings_middleware import SettingsMiddleware
 from loader import dp
 
 # Middlewares
-dp.middleware.setup(MenuMiddleware())
+dp.middleware.setup(CancelMiddleware())
+dp.middleware.setup(SettingsMiddleware())
 
 # Handlers
-handle_any_input.register_any_input_handlers(dp)
 start.register_start_handlers(dp)
 menu.register_menu_handlers(dp)
 search.register_search_handlers(dp)
-show_schedule.register_schedule_handlers(dp)
-schedule_answer.register_schedule_answer_handlers(dp)
+schedule_buttons_handler.register_schedule_answer_handlers(dp)
+handle_start_error.register_start_error_handler(dp)
+settings.register_settings_handler(dp)
 
 
 if __name__ == '__main__':

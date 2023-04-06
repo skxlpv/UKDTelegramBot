@@ -5,7 +5,7 @@ from loader import dp
 
 
 @dp.message_handler(state='*')
-async def any_input(message: types.Message, state: FSMContext):
+async def handle_start_error(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
 
     if current_state is None:
@@ -13,5 +13,5 @@ async def any_input(message: types.Message, state: FSMContext):
                             "Будь ласка, надішліть команду /start")
 
 
-def register_any_input_handlers(dispatcher: Dispatcher):
-    dispatcher.register_message_handler(any_input)
+def register_start_error_handler(dispatcher: Dispatcher):
+    dispatcher.register_message_handler(handle_start_error)

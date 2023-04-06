@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 from bot.database.connection import get_user_pref, get_schedule_picked
 from bot.database.schedule_requests import get_from_collection
-from bot.utils.schedule_utils import my_schedule_func
+from bot.utils.render_schedule import get_schedule
 from configs import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
@@ -25,16 +25,18 @@ async def send_daily_schedule():
             if user_primary != -20:
                 if 'group_id' in user_primary:
                     group_id = user_primary['group_id']
+                    group_name = user_primary['group_name']
                     isTeacher = False
                 else:
                     group_id = user_primary['teacher_id']
+                    group_name = user_primary['teacher_name']
                     isTeacher = True
-                text = my_schedule_func(group_id=group_id, isTeacher=isTeacher)
+                text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher)
                 if text is None or text == '90':
                     continue
                 else:
                     try:
-                        await bot.send_message(chat_id=user_id, text=text)
+                        await bot.send_message(chat_id=user_id, text=text, parse_mode='HTML')
                     except ChatNotFound:
                         continue
             else:

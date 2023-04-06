@@ -2,11 +2,9 @@ import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardMarkup
 
-from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
-from bot.utils.render_schedule import render_schedule
 from bot.keyboards.inline.role_keyboard import role_keyboard
+from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
@@ -14,17 +12,18 @@ from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils.api_requests import departments, teachers
+from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
                                     shrinked_specialties_list)
-from loader import dp
+from loader import dp, bot
 
 
 # GENERAL SEARCH
 @dp.message_handler(state=UserStates.search)
 async def search_schedule(message: types.Message):
-    await message.answer('Оберіть параметри пошуку розкладу', reply_markup=search_keyboard)
+    await message.answer('Будь ласка, оберіть параметри пошуку розкладу', reply_markup=search_keyboard)
     await UserStates.search_options.set()
 
 
@@ -46,7 +45,7 @@ async def search_options(call: types.CallbackQuery):
 
     if call.data == 'teacher':
         await call.message.delete()
-        await call.message.answer("Введіть П.І.Б.")
+        await call.message.answer("Введіть П.І.Б. викладача/-ки")
         await UserStates.search_teacher.set()
 
 
@@ -151,7 +150,8 @@ async def group_handler(message: types.Message, state: FSMContext):
                 schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                                  begin_date=today_date, end_date=today_date,
                                                  isTeacher=False, state=state)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
 
 
@@ -168,7 +168,8 @@ async def manual_search(message: types.Message, state: FSMContext):
             schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
                                              isTeacher=False, state=state)
-            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+            keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
             await UserStates.schedule_callback.set()
 
     if group_id is None:
@@ -224,7 +225,8 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 schedule = await render_schedule(search_name=teacher_name, search_id=teacher_id,
                                                  begin_date=today_date, end_date=today_date,
                                                  isTeacher=True, state=state)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=teacher_id, isTeacher=True)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
 
     if teacher_id is None:
