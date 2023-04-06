@@ -8,12 +8,10 @@ set_favorites
 -1 - wrong group or teacher name
 -10 - favorites limit reached
 -11 - duplication; item is already in favorites
-'Not implemented' - temporary, teacher name validation in progress
 
 set_primary
 1 - success
 -1 - wrong group or teacher name
-'Not implemented' - temporary, teacher name validation in progress
 
 delete_favorite
 1 - always

@@ -16,10 +16,24 @@ def get_from_collection(user, action):
 
 
 @update_lact_active
+def get_one_if_exist(user, group_id, isTeacher, action):
+    col = get_collection()
+    if isTeacher:
+        id_name = 'teacher_id'
+    else:
+        id_name = 'group_id'
+    if action not in ('primary', 'favorites'):
+        return -100
+    query = {'user_id': user, f"{action}.{id_name}": group_id}
+    result = col.find_one(query)
+    return result
+
+
+@update_lact_active
 def set_favorites(user, group_id, isTeacher=False):
     col = get_collection()
     insert_data = process_text(group_id, isTeacher)
-    if insert_data not in (-1, 'Not implemented'):
+    if insert_data not in (-1, ):
         validation = validate_favorites_quantity(user, insert_data, isTeacher=isTeacher)
         if validation == 1:
             col.update_one({'user_id': user},
@@ -35,9 +49,11 @@ def set_favorites(user, group_id, isTeacher=False):
 
 @update_lact_active
 def set_primary(user, group_id, isTeacher=False):
+    if get_one_if_exist(user=user, group_id=group_id, isTeacher=isTeacher, action='primary'):
+        return -11
     col = get_collection()
     insert_data = process_text(group_id, isTeacher)
-    if insert_data not in (-1, 'Not implemented'):
+    if insert_data not in (-1, ):
         col.update_one({"user_id": user},
                        {'$set':
                            {
@@ -66,6 +82,26 @@ def delete_favorite(user, group_id, isTeacher=False):
                            {
                                "favorites":
                                    {'group_id': group_id},
+                           }
+                        })
+    return 1
+
+
+def delete_primary(user, isTeacher=False):
+    col = get_collection()
+
+    if isTeacher:
+        col.update_one({'user_id': user},
+                       {'$unset':
+                           {
+                               "primary":1
+                           }
+                        })
+    else:
+        col.update_one({'user_id': user},
+                       {'$unset':
+                           {
+                               "primary": 1
                            }
                         })
     return 1

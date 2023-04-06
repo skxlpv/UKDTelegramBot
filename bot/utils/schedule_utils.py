@@ -2,11 +2,17 @@ from datetime import datetime, timedelta
 
 import aiogram.utils.exceptions
 import requests
+from aiogram import Bot
 from aiogram.dispatcher import FSMContext
 
-from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
+from bot.database.schedule_requests import delete_primary
+from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
+from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils import render_schedule
+from configs import API_TOKEN
+
+bot = Bot(token=API_TOKEN)
 
 day_of_week_dict = {
     0: 'ПОНЕДІЛОК',
@@ -28,8 +34,11 @@ async def get_teacher_or_group(primary, message, state):
             schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
                                                              begin_date=today_date, end_date=today_date,
                                                              isTeacher=isTeacher, state=state)
-            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
-            await UserStates.schedule_callback.set()
+            # if schedule validated (primary exist)
+            if await validate_primary(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await UserStates.schedule_callback.set()
         else:
             isTeacher = False
             group_id = primary['group_id']
@@ -37,8 +46,11 @@ async def get_teacher_or_group(primary, message, state):
             schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
                                                              begin_date=today_date,
                                                              end_date=today_date, isTeacher=isTeacher, state=state)
-            await message.answer(schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
-            await UserStates.schedule_callback.set()
+            # if schedule validated (primary exist)
+            if await validate_primary(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
         return False
 
@@ -64,7 +76,9 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
                                                      end_date=current_friday.strftime('%d.%m.%Y'),
                                                      isTeacher=isTeacher, state=state)
     try:
-        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+        await callback.message.edit_text(text=schedule, parse_mode='HTML',
+                                         reply_markup=get_schedule_keyboard(user=callback.from_user.id,
+                                                                            group_id=group_id, isTeacher=isTeacher))
     except aiogram.utils.exceptions.MessageNotModified:
         pass
 
@@ -81,6 +95,18 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
                                                      begin_date=date, end_date=date,
                                                      isTeacher=isTeacher, state=state)
     try:
-        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=schedule_keyboard)
+        keyboard = get_schedule_keyboard(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard)
     except aiogram.utils.exceptions.MessageNotModified:
         pass
+
+
+async def validate_primary(user, isTeacher, schedule):
+    if schedule in ('90',):
+        await bot.send_message(chat_id=user,
+                               text='Вибачте, даний розклад не знайдено чи було видалено',
+                               reply_markup=menu_keyboard)
+        await UserStates.menu_handler.set()
+        delete_primary(user=user, isTeacher=isTeacher)
+        return False
+    return True
