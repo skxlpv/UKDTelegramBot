@@ -4,7 +4,6 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class UserStates(StatesGroup):
     # MENU STATES
     # general menu states
-    start = State()
     menu = State()
     menu_handler = State()
 
@@ -28,6 +27,5 @@ class UserStates(StatesGroup):
     get_teacher_schedule = State()
 
     # schedule state
-    my_schedule = State()
     schedule_callback = State()
     tip_callback = State()

@@ -5,10 +5,8 @@ from aiogram.dispatcher import FSMContext
 
 from bot.database.schedule_requests import get_from_collection
 from bot.handlers import menu
-from bot.handlers.show_schedule import my_schedule
 from bot.keyboards.inline.schedule_keyboard import schedule_keyboard
 from bot.keyboards.reply.favorite_keyboard import favorite_keyboard
-from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import clear_keyboard

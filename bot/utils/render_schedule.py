@@ -16,7 +16,7 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
         data['group_id'] = str(search_id)
         data['isTeacher'] = isTeacher
 
-    # perform request based on isTeacher arg
+    # perform request based on isTeacher argument
     if isTeacher:
         request_mode = 'teacher'
     else:
@@ -26,12 +26,12 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
         f'&OBJ_ID={search_id}&OBJ_name=&dep_name=&ros_text=separated&begin_date={begin_date}&end_date={end_date}'
         f'&req_format=json&coding_mode=UTF8&bs=ok').json()
 
-    # generate group title
     today_lessons_list = obj['psrozklad_export']['roz_items']
-    list_of_lessons.append(f"<code><u>{search_name}</u></code>")
-
     schedule_statistics = f'_________________________________\n' \
                           f'<code>Загальна кількість пар: {len(today_lessons_list)}</code>'
+
+    # add group title
+    list_of_lessons.append(f"<code><u>{search_name}</u></code>")
 
     # generate list of lessons
     if len(today_lessons_list) > 0:
