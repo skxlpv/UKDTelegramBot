@@ -2,8 +2,6 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.database.schedule_requests import get_one_if_exist
 
-# schedule_keyboard = InlineKeyboardMarkup(row_width=3)
-
 mn = InlineKeyboardButton(text="Пн", callback_data='mn')
 ts = InlineKeyboardButton(text="Вт", callback_data='ts')
 wd = InlineKeyboardButton(text="Ср", callback_data='wd')
