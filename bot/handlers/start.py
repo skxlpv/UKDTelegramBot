@@ -1,8 +1,9 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
+from aiogram.types import BotCommand
 
 from bot.handlers import menu
-from loader import dp
+from loader import dp, bot
 
 
 @dp.message_handler(commands='start', state='*')

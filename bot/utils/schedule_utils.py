@@ -35,7 +35,8 @@ async def get_teacher_or_group(primary, message, state):
                                                              begin_date=today_date, end_date=today_date,
                                                              isTeacher=isTeacher, state=state)
             # if schedule validated (primary exist)
-            if await validate_primary(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+            if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -47,7 +48,8 @@ async def get_teacher_or_group(primary, message, state):
                                                              begin_date=today_date,
                                                              end_date=today_date, isTeacher=isTeacher, state=state)
             # if schedule validated (primary exist)
-            if await validate_primary(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+            if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -95,13 +97,14 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
                                                      begin_date=date, end_date=date,
                                                      isTeacher=isTeacher, state=state)
     try:
-        keyboard = get_schedule_keyboard(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
+        keyboard = get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
+                                         isTeacher=isTeacher, weekday=number)
         await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard)
     except aiogram.utils.exceptions.MessageNotModified:
         pass
 
 
-async def validate_primary(user, isTeacher, schedule):
+async def schedule_exist(user, isTeacher, schedule):
     if schedule in ('90',):
         await bot.send_message(chat_id=user,
                                text='Вибачте, даний розклад не знайдено чи було видалено',

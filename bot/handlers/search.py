@@ -2,12 +2,14 @@ import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
+from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
@@ -150,6 +152,7 @@ async def group_handler(message: types.Message, state: FSMContext):
                 schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                                  begin_date=today_date, end_date=today_date,
                                                  isTeacher=False, state=state)
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -168,6 +171,7 @@ async def manual_search(message: types.Message, state: FSMContext):
             schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
                                              isTeacher=False, state=state)
+            await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
             keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
             await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
             await UserStates.schedule_callback.set()
@@ -225,6 +229,7 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 schedule = await render_schedule(search_name=teacher_name, search_id=teacher_id,
                                                  begin_date=today_date, end_date=today_date,
                                                  isTeacher=True, state=state)
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=teacher_id, isTeacher=True)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
