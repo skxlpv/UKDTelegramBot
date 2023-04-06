@@ -3,6 +3,7 @@ import logging
 from aiogram import Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
+from aiogram.types import BotCommand
 
 from bot.worker.scheduler import scheduler
 from configs import API_TOKEN

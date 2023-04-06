@@ -61,8 +61,9 @@ async def get_favorite(message: types.Message, state: FSMContext):
                                              isTeacher=isTeacher, state=state)
 
             # if schedule validated (favorite exist)
-            if await validate_primary(user=message.from_user.id, group_id=group_id,
+            if await schedule_exist(user=message.from_user.id, group_id=group_id,
                                       isTeacher=isTeacher, schedule=schedule):
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -78,8 +79,9 @@ async def get_favorite(message: types.Message, state: FSMContext):
                                              isTeacher=isTeacher, state=state)
 
             # if schedule validated (favorite exist)
-            if await validate_primary(user=message.from_user.id, group_id=group_id,
+            if await schedule_exist(user=message.from_user.id, group_id=group_id,
                                       isTeacher=isTeacher, schedule=schedule):
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -89,7 +91,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
         await message.answer('Виберіть зі списку:', reply_markup=favorite_keyboard)
 
 
-async def validate_primary(user, isTeacher, group_id, schedule):
+async def schedule_exist(user, isTeacher, group_id, schedule):
     if schedule in ('90',):
         await bot.send_message(chat_id=user,
                                text='Вибачте, даний розклад не знайдено чи було видалено',
