@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
@@ -7,11 +5,14 @@ from aiogram.dispatcher import Dispatcher
 from bot.worker.scheduler import scheduler
 from configs import API_TOKEN
 
+import logging
+from logging.handlers import RotatingFileHandler
+
 # Configure logging
-logger = logging.getLogger('UKD_bot')
+logger = logging.getLogger('BOT_LOG')
 logger.setLevel(logging.WARNING)
 
-file_handler = logging.FileHandler('UKD_bot.log')
+file_handler = RotatingFileHandler('bot/storage/bot_log', maxBytes=1024*1024, backupCount=100)
 file_handler.setLevel(logging.WARNING)
 
 stream_handler = logging.StreamHandler()
