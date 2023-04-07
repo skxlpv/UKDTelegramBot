@@ -10,13 +10,13 @@ from logging.handlers import RotatingFileHandler
 
 # Configure logging
 logger = logging.getLogger('BOT_LOG')
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 file_handler = RotatingFileHandler('bot/storage/logs/bot_log', maxBytes=1024*1024, backupCount=100)
-file_handler.setLevel(logging.WARNING)
+file_handler.setLevel(logging.INFO)
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.WARNING)
+stream_handler.setLevel(logging.INFO)
 
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
