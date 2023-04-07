@@ -57,17 +57,17 @@ async def get_teacher_or_group(primary, message, state):
         return False
 
 
-async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
+async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=datetime.today()):
     weekday = today.weekday()
     data = await state.get_data()
     search_name = data['search_name']
 
     if week == 'current':
         monday = today - timedelta(days=weekday)
-        current_friday = today - timedelta(days=(-3))
+        current_friday = monday + timedelta(days=5)
     elif week == 'next':
         monday = today - timedelta(days=weekday - 7)
-        current_friday = monday + timedelta(days=6)
+        current_friday = monday + timedelta(days=5)
     else:
         print('Week argument in week_schedule_display() is invalid. '
               'Must be either "current" or "next"')
