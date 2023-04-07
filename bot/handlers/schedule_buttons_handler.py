@@ -1,5 +1,6 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from bot.database.schedule_requests import set_primary, set_favorites, delete_favorite, delete_primary
 from bot.handlers.menu import menu
@@ -14,7 +15,6 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
     data = await state.get_data()
     isTeacher = data['isTeacher']
     group_id = data['group_id']
-
     match callback.data:
         case 'mn':
             await callback.answer(text='Розклад на понеділок')
