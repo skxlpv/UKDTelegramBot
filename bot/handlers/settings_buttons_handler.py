@@ -5,6 +5,7 @@ from aiogram import types, Dispatcher
 from bot.database.pref_requests import toggle_pref
 from bot.keyboards.inline.settings_keyboard import get_settings_keyboard
 from bot.states.UserStates import UserStates
+from bot.storage.placeholders import messages, callbacks
 from loader import dp, bot
 
 
@@ -23,7 +24,7 @@ async def callback_settings_buttons(callback: types.CallbackQuery):
     keyboard = get_settings_keyboard(user)
     await bot.edit_message_reply_markup(message_id=callback.message.message_id, chat_id=callback.from_user.id,
                                         reply_markup=keyboard)
-    await callback.answer(text='Налаштування змінено')
+    await callback.answer(text=callbacks.SETTINGS_CHANGED)
 
 
 def register_schedule_answer_handlers(dispatcher: Dispatcher):

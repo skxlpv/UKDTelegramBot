@@ -14,6 +14,7 @@ bot = Bot(token=API_TOKEN)
 
 async def send_daily_schedule():
     col_pref = get_user_pref()
+    col_schedule = get_schedule_picked()
 
     users = col_pref.find()
 
@@ -38,7 +39,8 @@ async def send_daily_schedule():
                     try:
                         await bot.send_message(chat_id=user_id, text=text, parse_mode='HTML')
                     except ChatNotFound:
-                        continue
+                        col_schedule.find_one_and_delete({'user_id': user_id})
+                        col_pref.find_one_and_delete({'user_id': user_id})
             else:
                 continue
 

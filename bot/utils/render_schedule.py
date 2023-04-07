@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from aiogram.dispatcher import FSMContext
 
+from bot.storage.placeholders import messages
 from bot.utils.schedule_utils import day_of_week_dict
 
 
@@ -17,8 +18,8 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
                             begin_date=begin_date, end_date=end_date)
     if schedule is None:
         schedule = ''
-        schedule += f"<code><u>{search_name}</u></code>\n"
-        schedule += 'Цього дня у вас немає пар, хорошого відпочинку!'
+        schedule += (messages.SEARCH_NAME % search_name)
+        schedule += messages.NO_CLASSES
     return schedule
 
 
@@ -26,7 +27,7 @@ def get_schedule(search_name, search_id, isTeacher,
                  begin_date=datetime.now().strftime('%d.%m.%Y'), end_date=datetime.now().strftime('%d.%m.%Y')):
     list_of_lessons = []
     message_of_lessons = ''
-    break_line = '_________________________________'
+    break_line = messages.BREAK_LINE
     # perform request based on isTeacher arg
     if isTeacher:
         request_mode = 'teacher'
@@ -42,10 +43,9 @@ def get_schedule(search_name, search_id, isTeacher,
 
     # generate group title
     today_lessons_list = obj['psrozklad_export']['roz_items']
-    list_of_lessons.append(f"<code><u>{search_name}</u></code>")
+    list_of_lessons.append(messages.SEARCH_NAME % search_name)
 
-    schedule_statistics = f'_________________________________\n' \
-                          f'<code>Загальна кількість пар: {len(today_lessons_list)}</code>'
+    schedule_statistics = messages.CLASSES_QUANTITY % len(today_lessons_list)
 
     # generate list of lessons
     if len(today_lessons_list) > 0:
@@ -59,7 +59,7 @@ def get_schedule(search_name, search_id, isTeacher,
             if object_date != current_date:
                 next_day_of_week = datetime.strptime(object_date, '%d.%m.%Y').weekday()
                 list_of_lessons.append(break_line)
-                list_of_lessons.append(f'<code><u>{day_of_week_dict[next_day_of_week]}, {object_date}</u></code>')
+                list_of_lessons.append(messages.DAY_AND_DATE % (day_of_week_dict[next_day_of_week], object_date))
                 current_date = object_date
                 day_of_week += next_day_of_week
 
@@ -76,9 +76,7 @@ def get_schedule(search_name, search_id, isTeacher,
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
             room = today_lessons_list[lesson_index]['room']
 
-            lesson = f'🕑 <b>{time}</b> | {room}\n' \
-                     f'<i>{title}</i> ({lesson_type})\n' \
-                     f'<pre>{teacher}</pre>\n'
+            lesson = messages.LESSON % (time, room, title, lesson_type, teacher)
             list_of_lessons.append(lesson)
 
     else:

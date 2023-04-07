@@ -9,10 +9,12 @@ from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.reply.favorite_keyboard import favorite_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
+from bot.storage.placeholders import messages
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import clear_keyboard
 from configs import API_TOKEN
 from loader import dp
+
 bot = Bot(token=API_TOKEN)
 
 
@@ -35,10 +37,10 @@ async def show_favorites(message: types.Message, state: FSMContext):
 
         async with state.proxy() as state:
             state['favorites'] = favorites
-        await message.answer('Виберіть зі списку:', reply_markup=favorite_keyboard)
+        await message.answer(text=messages.SELECT_FROM_LIST, reply_markup=favorite_keyboard)
         await UserStates.get_favorite.set()
     else:
-        await message.answer('Вибачте, ви не додали жодної групи', reply_markup=favorite_keyboard)
+        await message.answer(text=messages.NOT_PICKED_ANY_GROUP, reply_markup=favorite_keyboard)
         await UserStates.menu.set()
         await menu.menu(message=message)
 
@@ -62,7 +64,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
 
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,
-                                      isTeacher=isTeacher, schedule=schedule):
+                                    isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
@@ -80,7 +82,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
 
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,
-                                      isTeacher=isTeacher, schedule=schedule):
+                                    isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
@@ -88,13 +90,13 @@ async def get_favorite(message: types.Message, state: FSMContext):
 
     if not found:
         await UserStates.show_favorites.set()
-        await message.answer('Виберіть зі списку:', reply_markup=favorite_keyboard)
+        await message.answer(messages.SELECT_FROM_LIST, reply_markup=favorite_keyboard)
 
 
 async def schedule_exist(user, isTeacher, group_id, schedule):
     if schedule in ('90',):
         await bot.send_message(chat_id=user,
-                               text='Вибачте, даний розклад не знайдено чи було видалено',
+                               text=messages.NOT_FOUND_OR_DELETED,
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
         delete_favorite(user=user, group_id=group_id, isTeacher=isTeacher)

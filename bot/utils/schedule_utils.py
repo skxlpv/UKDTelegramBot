@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 import aiogram.utils.exceptions
@@ -9,6 +10,7 @@ from bot.database.schedule_requests import delete_primary
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
+from bot.storage.placeholders import messages
 from bot.utils import render_schedule
 from configs import API_TOKEN
 
@@ -36,7 +38,7 @@ async def get_teacher_or_group(primary, message, state):
                                                              isTeacher=isTeacher, state=state)
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -49,7 +51,7 @@ async def get_teacher_or_group(primary, message, state):
                                                              end_date=today_date, isTeacher=isTeacher, state=state)
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
@@ -69,8 +71,8 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
         monday = today - timedelta(days=weekday - 7)
         current_friday = monday + timedelta(days=5)
     else:
-        print('Week argument in week_schedule_display() is invalid. '
-              'Must be either "current" or "next"')
+        logging.warning('Week argument in week_schedule_display() is invalid. '
+                        'Must be either "current" or "next"')
         raise ValueError
 
     schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
@@ -107,7 +109,7 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
 async def schedule_exist(user, isTeacher, schedule):
     if schedule in ('90',):
         await bot.send_message(chat_id=user,
-                               text='Вибачте, даний розклад не знайдено чи було видалено',
+                               text=messages.NOT_FOUND_OR_DELETED,
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
         delete_primary(user=user, isTeacher=isTeacher)
