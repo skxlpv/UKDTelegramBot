@@ -30,7 +30,6 @@ def validate_favorites_quantity(user, insert_data, isTeacher):
         return -11
     favorites = request.get_from_collection(user, 'favorites')
     if favorites not in (-20,):
-
         if len(favorites) >= 10:
             return -10
     return 1
