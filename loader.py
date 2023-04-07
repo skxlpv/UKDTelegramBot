@@ -9,13 +9,13 @@ from configs import API_TOKEN
 
 # Configure logging
 logger = logging.getLogger('UKD_bot')
-logger.setLevel(logging.FATAL)
+logger.setLevel(logging.WARNING)
 
 file_handler = logging.FileHandler('UKD_bot.log')
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.WARNING)
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.WARNING)
 
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
