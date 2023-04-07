@@ -1,3 +1,5 @@
+from ctypes import Union
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import BotCommand
@@ -7,8 +9,9 @@ from loader import dp, bot
 
 
 @dp.message_handler(commands='start', state='*')
-async def start(message: types.Message, state: FSMContext):
-    await state.finish()
+async def start(message: types.Message, state: Union(FSMContext, None)):
+    if state:
+        await state.finish()
     await message.answer(f'Вітаю, {message.from_user.first_name}!\n'
                          f'Я -- офіційний бот-асистент від Університету Короля Данила!\n')
     await menu.menu(message=message)
