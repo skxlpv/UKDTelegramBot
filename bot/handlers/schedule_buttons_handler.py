@@ -1,3 +1,4 @@
+import aiogram.utils.exceptions
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
@@ -33,12 +34,18 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
             await day_schedule_display(number=4, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'week':
             await callback.answer(text='Розклад на тиждень')
-            await week_schedule_display(week='current', callback=callback,
-                                        group_id=group_id, isTeacher=isTeacher, state=state)
+            try:
+                await week_schedule_display(week='current', callback=callback,
+                                            group_id=group_id, isTeacher=isTeacher, state=state)
+            except aiogram.utils.exceptions.BadRequest:
+                await callback.message.answer('Сталася помилка!')
         case 'next_week':
             await callback.answer(text='Розклад на наступний тиждень')
-            await week_schedule_display(week='next', callback=callback,
-                                        group_id=group_id, isTeacher=isTeacher, state=state)
+            try:
+                await week_schedule_display(week='next', callback=callback,
+                                            group_id=group_id, isTeacher=isTeacher, state=state)
+            except aiogram.utils.exceptions.BadRequest:
+                await callback.message.answer('Сталася помилка!')
         case 'primary':
             primary_status = set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             match primary_status:

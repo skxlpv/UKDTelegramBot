@@ -58,7 +58,8 @@ async def get_favorite(message: types.Message, state: FSMContext):
             await state.reset_state()
             schedule = await render_schedule(search_name=message.text, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
-                                             isTeacher=isTeacher, state=state)
+                                             isTeacher=isTeacher, state=state,
+                                             user_id=message.from_user.id)
 
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,
@@ -76,7 +77,8 @@ async def get_favorite(message: types.Message, state: FSMContext):
             today_date = datetime.date.today().strftime("%d.%m.%Y")
             schedule = await render_schedule(search_name=message.text, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
-                                             isTeacher=isTeacher, state=state)
+                                             isTeacher=isTeacher, state=state,
+                                             user_id=message.from_user.id)
 
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,

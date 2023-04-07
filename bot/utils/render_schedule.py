@@ -3,10 +3,11 @@ from datetime import datetime
 import requests
 from aiogram.dispatcher import FSMContext
 
+from bot.database.pref_requests import get_preferences
 from bot.utils.schedule_utils import day_of_week_dict
 
 
-async def render_schedule(search_name, search_id, isTeacher, begin_date: datetime.date,
+async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date: datetime.date,
                           end_date: datetime.date, state: FSMContext):
     async with state.proxy() as data:  # put variables in storage
         data['search_name'] = search_name
@@ -14,7 +15,7 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
         data['isTeacher'] = isTeacher
 
     schedule = get_schedule(search_name=search_name, search_id=search_id, isTeacher=isTeacher,
-                            begin_date=begin_date, end_date=end_date)
+                            begin_date=begin_date, end_date=end_date, user_id=user_id)
     if schedule is None:
         schedule = ''
         schedule += f"<code><u>{search_name}</u></code>\n"
@@ -22,8 +23,9 @@ async def render_schedule(search_name, search_id, isTeacher, begin_date: datetim
     return schedule
 
 
-def get_schedule(search_name, search_id, isTeacher,
-                 begin_date=datetime.now().strftime('%d.%m.%Y'), end_date=datetime.now().strftime('%d.%m.%Y')):
+def get_schedule(search_name, search_id, isTeacher, user_id,
+                 begin_date=datetime.now().strftime('%d.%m.%Y'),
+                 end_date=datetime.now().strftime('%d.%m.%Y')):
     list_of_lessons = []
     message_of_lessons = ''
     break_line = '_________________________________'
@@ -51,6 +53,8 @@ def get_schedule(search_name, search_id, isTeacher,
     if len(today_lessons_list) > 0:
         day_of_week = 0
         current_date = 0
+        user_prefs = get_preferences(user_id)
+        hasAdditionalCoursesOption = user_prefs['additional_courses']
 
         # get values
         for lesson_index in range(len(today_lessons_list)):
@@ -65,6 +69,12 @@ def get_schedule(search_name, search_id, isTeacher,
 
             time = today_lessons_list[lesson_index]['lesson_time']
             title = today_lessons_list[lesson_index]['title']
+            if title == '':
+                if hasAdditionalCoursesOption:
+                    title = today_lessons_list[lesson_index]['reservation']
+                else:
+                    continue
+
             lesson_type = today_lessons_list[lesson_index]['type']
             if isTeacher:
                 teacher = today_lessons_list[lesson_index]['object']

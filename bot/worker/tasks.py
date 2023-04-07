@@ -5,7 +5,7 @@ from aiogram.utils.exceptions import ChatNotFound
 from dateutil.relativedelta import relativedelta
 
 from bot.database.connection import get_user_pref, get_schedule_picked
-from bot.database.schedule_requests import get_from_collection
+from bot.database import schedule_requests
 from bot.utils.render_schedule import get_schedule
 from configs import API_TOKEN
 from loader import logger
@@ -22,7 +22,7 @@ async def send_daily_schedule():
         user_id = user['user_id']
         pref = user['mutable']['morning_schedule']
         if pref is True:
-            user_primary = get_from_collection(user=user_id, action='primary')
+            user_primary = schedule_requests.get_from_collection(user=user_id, action='primary')
             if user_primary != -20:
                 if 'group_id' in user_primary:
                     group_id = user_primary['group_id']
@@ -32,7 +32,7 @@ async def send_daily_schedule():
                     group_id = user_primary['teacher_id']
                     group_name = user_primary['teacher_name']
                     isTeacher = True
-                text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher)
+                text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=None)
                 if text is None or text == '90':
                     continue
                 else:
