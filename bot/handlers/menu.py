@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
 from bot.database.schedule_requests import get_from_collection
-from bot.handlers import search, favorites
+from bot.handlers import search, favorites, settings
 from bot.handlers import start
 from bot.keyboards.inline.yes_or_not_keyboard import tip_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
@@ -22,8 +22,11 @@ async def menu(message: types.Message):
 
 @dp.message_handler(state=(UserStates.menu_handler, '*'))
 async def menu_handler(message: types.Message, state: FSMContext):
-    if message.text == '/start':
-        await start.start(message=message, state=state)
+    # if message.text == '/start':
+    #     await start.start(message=message, state=state)
+
+    if message.text == '/settings':
+        await settings.settings_handler()
 
     if message.text == 'Знайти розклад':
         await UserStates.search.set()
