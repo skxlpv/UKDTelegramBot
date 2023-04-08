@@ -135,4 +135,4 @@ dmypy.json
 .idea/
 
 # logs
-storage/logs
+/bot/storage/logs/

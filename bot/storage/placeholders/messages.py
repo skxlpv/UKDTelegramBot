@@ -55,7 +55,7 @@ NO_CLASSES = 'Цього дня у вас немає пар, хорошого в
 BREAK_LINE = '_'*35
 CLASSES_QUANTITY = f'{BREAK_LINE}\n' \
                    '<code>Загальна кількість пар: %s </code>'
-SEARCH_NAME = '<code><u>%s</u></code>'
+SEARCH_NAME = '<code><u>%s</u></code>\n'
 DAY_AND_DATE = '<code><u>%s, %s</u></code>'
 LESSON = '🕑 <b>%s</b> | %s\n'\
          '<i>%s</i> (%s)\n'\
