@@ -1,7 +1,7 @@
 from bot.database.connection import get_user_pref as get_collection
 
 from bot.utils import update_lact_active, DEFAULT_VALUES
-from loader import logger
+import loader
 
 
 @update_lact_active
@@ -36,5 +36,5 @@ def toggle_pref(user, param):
     if param in DEFAULT_VALUES:
         col.update_one(query, toggle)
         return 1
-    logger.error(f'ERROR occurred while toggle_pref: -100')
+    loader.logger.error(f'ERROR occurred while toggle_pref: -100')
     return -100

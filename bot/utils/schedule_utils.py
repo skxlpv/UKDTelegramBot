@@ -2,12 +2,11 @@ import logging
 from datetime import datetime, timedelta
 
 import aiogram.utils.exceptions
-import requests
 from aiogram import Bot
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import delete_primary
-from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
+from bot.database import schedule_requests
+from bot.keyboards.inline import schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.storage.placeholders import messages
@@ -35,11 +34,14 @@ async def get_teacher_or_group(primary, message, state):
             today_date = datetime.today().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
                                                              begin_date=today_date, end_date=today_date,
-                                                             isTeacher=isTeacher, state=state)
+                                                             isTeacher=isTeacher, state=state,
+                                                             user_id=message.from_user.id)
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
-                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE,
+                                       reply_markup=menu_keyboard)
+                keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
+                                                                   isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
         else:
@@ -48,11 +50,13 @@ async def get_teacher_or_group(primary, message, state):
             today_date = datetime.today().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
                                                              begin_date=today_date,
-                                                             end_date=today_date, isTeacher=isTeacher, state=state)
+                                                             end_date=today_date, isTeacher=isTeacher, state=state,
+                                                             user_id=message.from_user.id)
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
-                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
+                keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
+                                                                   isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
@@ -78,11 +82,14 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
     schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
                                                      begin_date=monday.strftime('%d.%m.%Y'),
                                                      end_date=current_friday.strftime('%d.%m.%Y'),
-                                                     isTeacher=isTeacher, state=state)
+                                                     isTeacher=isTeacher, state=state,
+                                                     user_id=callback.from_user.id)
     try:
         await callback.message.edit_text(text=schedule, parse_mode='HTML',
-                                         reply_markup=get_schedule_keyboard(user=callback.from_user.id,
-                                                                            group_id=group_id, isTeacher=isTeacher))
+                                         reply_markup=schedule_keyboard.get_schedule_keyboard(
+                                             user=callback.from_user.id,
+                                             group_id=group_id, isTeacher=isTeacher)
+                                         )
     except aiogram.utils.exceptions.MessageNotModified:
         pass
 
@@ -97,10 +104,11 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
 
     schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
                                                      begin_date=date, end_date=date,
-                                                     isTeacher=isTeacher, state=state)
+                                                     isTeacher=isTeacher, state=state,
+                                                     user_id=callback.from_user.id)
     try:
-        keyboard = get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
-                                         isTeacher=isTeacher, weekday=number)
+        keyboard = schedule_keyboard.get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
+                                                           isTeacher=isTeacher, weekday=number)
         await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard)
     except aiogram.utils.exceptions.MessageNotModified:
         pass
@@ -112,6 +120,6 @@ async def schedule_exist(user, isTeacher, schedule):
                                text=messages.NOT_FOUND_OR_DELETED,
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
-        delete_primary(user=user, isTeacher=isTeacher)
+        schedule_requests.delete_primary(user=user, isTeacher=isTeacher)
         return False
     return True

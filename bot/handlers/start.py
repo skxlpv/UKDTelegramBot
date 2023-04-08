@@ -1,5 +1,4 @@
 import typing
-
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import BotCommand

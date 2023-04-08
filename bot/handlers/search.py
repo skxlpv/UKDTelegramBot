@@ -152,7 +152,8 @@ async def group_handler(message: types.Message, state: FSMContext):
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
                 schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                                  begin_date=today_date, end_date=today_date,
-                                                 isTeacher=False, state=state)
+                                                 isTeacher=False, state=state,
+                                                 user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
@@ -170,7 +171,8 @@ async def manual_search(message: types.Message, state: FSMContext):
             today_date = datetime.date.today().strftime("%d.%m.%Y")
             schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
-                                             isTeacher=False, state=state)
+                                             isTeacher=False, state=state,
+                                             user_id=message.from_user.id)
             await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
             keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
             await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
@@ -228,7 +230,8 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
                 schedule = await render_schedule(search_name=teacher_name, search_id=teacher_id,
                                                  begin_date=today_date, end_date=today_date,
-                                                 isTeacher=True, state=state)
+                                                 isTeacher=True, state=state,
+                                                 user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=teacher_id, isTeacher=True)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
