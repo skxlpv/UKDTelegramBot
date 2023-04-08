@@ -38,7 +38,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Project logs
-UKD_bot.log
+bot/storage/logs
 
 # Unit test / coverage reports
 htmlcov/
