@@ -51,11 +51,11 @@ WELCOME = 'Вітаю, %s!\n' \
 
 #    UTILS
 # render_schedule
-NO_CLASSES = 'Цього дня у вас немає пар, хорошого відпочинку!'
+NO_CLASSES = '\nЦього дня у вас немає пар, хорошого відпочинку!'
 BREAK_LINE = '_'*35
 CLASSES_QUANTITY = f'{BREAK_LINE}\n' \
                    '<code>Загальна кількість пар: %s </code>'
-SEARCH_NAME = '<code><u>%s</u></code>\n'
+SEARCH_NAME = '<code><u>%s</u></code>'
 DAY_AND_DATE = '<code><u>%s, %s</u></code>'
 LESSON = '%s <b>%s</b> | %s\n'\
          '<i>%s</i> (%s)\n'\
