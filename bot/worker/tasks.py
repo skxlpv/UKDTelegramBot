@@ -1,19 +1,20 @@
 from datetime import datetime
 
 from aiogram import Bot
-from aiogram.utils.exceptions import ChatNotFound
+from aiogram.utils.exceptions import ChatNotFound, BotBlocked
 from dateutil.relativedelta import relativedelta
 
-from bot.database.connection import get_user_pref, get_schedule_picked
+import loader
 from bot.database import schedule_requests
+from bot.database.connection import get_user_pref, get_schedule_picked
 from bot.utils.render_schedule import get_schedule
 from configs import API_TOKEN
-import loader
 
 bot = Bot(token=API_TOKEN)
 
 
 async def send_daily_schedule():
+    loader.logger.info('WORKER: method \'send_daily_schedule\' started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
@@ -33,22 +34,24 @@ async def send_daily_schedule():
                     group_id = user_primary['teacher_id']
                     group_name = user_primary['teacher_name']
                     isTeacher = True
-                text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=None)
+                text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=user_id)
                 if text is None or text == '90':
                     continue
                 else:
                     try:
                         await bot.send_message(chat_id=user_id, text=text, parse_mode='HTML')
-                    except ChatNotFound:
+                    except (ChatNotFound, BotBlocked) as ex:
                         col_schedule.find_one_and_delete({'user_id': user_id})
                         col_pref.find_one_and_delete({'user_id': user_id})
-                        logger.error(f'FAILED daily schedule sending. User: {user_id} deleted')
+                        loader.logger.error(f'FAILED daily schedule sending. EXCEPTION: {ex}. User: {user_id} deleted')
                         continue
             else:
                 continue
+    loader.logger.info('WORKER: method \'send_daily_schedule\' ended')
 
 
 async def database_cleanup():
+    loader.logger.info('WORKER: method \'database_cleanup\' started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
@@ -62,4 +65,6 @@ async def database_cleanup():
             col_schedule.find_one_and_delete({'user_id': user_id})
             col_pref.find_one_and_delete({'user_id': user_id})
             loader.logger.info(f'User {user_id} (last active: {last_active}) '
-                        f'has been deleted during database_cleanup')
+                               f'has been deleted during database_cleanup')
+
+    loader.logger.info('WORKER: method \'database_cleanup\' ended')

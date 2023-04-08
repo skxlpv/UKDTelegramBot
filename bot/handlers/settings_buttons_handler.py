@@ -1,11 +1,11 @@
-import re
+from aiogram import types, Dispatcher
 
 from aiogram import types, Dispatcher
 
 from bot.database.pref_requests import toggle_pref
 from bot.keyboards.inline.settings_keyboard import get_settings_keyboard
 from bot.states.UserStates import UserStates
-from bot.storage.placeholders import messages, callbacks
+from bot.storage.placeholders import callbacks
 from loader import dp, bot
 
 

@@ -2,7 +2,6 @@ import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard

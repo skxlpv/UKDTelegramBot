@@ -1,11 +1,11 @@
 import typing
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import BotCommand
 
 from bot.handlers import menu
 from bot.storage.placeholders import messages
-from loader import dp, bot
+from loader import dp
 
 
 @dp.message_handler(commands='start', state='*')

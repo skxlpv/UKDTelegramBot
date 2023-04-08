@@ -1,5 +1,4 @@
 from aiogram import Dispatcher, types
-from aiogram.types import ReplyKeyboardRemove
 
 # from bot.handlers.menu import menu
 from bot.keyboards.inline.settings_keyboard import get_settings_keyboard
