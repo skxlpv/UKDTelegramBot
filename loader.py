@@ -1,12 +1,12 @@
+import logging
+from logging.handlers import RotatingFileHandler
+
 from aiogram import Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
 
 from bot.worker.scheduler import scheduler
 from configs import API_TOKEN
-
-import logging
-from logging.handlers import RotatingFileHandler
 
 # Configure logging
 logger = logging.getLogger('BOT_LOG')

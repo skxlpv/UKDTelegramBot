@@ -3,8 +3,8 @@ from datetime import datetime
 import requests
 from aiogram.dispatcher import FSMContext
 
-from bot.storage.placeholders import messages
 from bot.database.pref_requests import get_preferences
+from bot.storage.placeholders import messages
 from bot.utils.schedule_utils import day_of_week_dict
 
 

@@ -1,7 +1,6 @@
 import aiogram.utils.exceptions
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from bot.database.schedule_requests import set_primary, set_favorites, delete_favorite, delete_primary
 from bot.handlers.menu import menu

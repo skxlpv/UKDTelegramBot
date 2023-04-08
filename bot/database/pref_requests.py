@@ -1,7 +1,6 @@
-from bot.database.connection import get_user_pref as get_collection
-
-from bot.utils import update_lact_active, DEFAULT_VALUES
 import loader
+from bot.database.connection import get_user_pref as get_collection
+from bot.utils import update_lact_active, DEFAULT_VALUES
 
 
 @update_lact_active
