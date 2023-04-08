@@ -59,6 +59,11 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
         # get values
         for lesson_index in range(len(today_lessons_list)):
             object_date = today_lessons_list[lesson_index]['date']
+            time = today_lessons_list[lesson_index]['lesson_time']
+            title = today_lessons_list[lesson_index]['title']
+            lesson_type = today_lessons_list[lesson_index]['type']
+            room = today_lessons_list[lesson_index]['room']
+            emoji = '🕑'
 
             if object_date != current_date:
                 next_day_of_week = datetime.strptime(object_date, '%d.%m.%Y').weekday()
@@ -67,15 +72,13 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 current_date = object_date
                 day_of_week += next_day_of_week
 
-            time = today_lessons_list[lesson_index]['lesson_time']
-            title = today_lessons_list[lesson_index]['title']
             if title == '':
                 if hasAdditionalCoursesOption:
                     title = today_lessons_list[lesson_index]['reservation']
+                    emoji = '🌀'
                 else:
                     continue
 
-            lesson_type = today_lessons_list[lesson_index]['type']
             if isTeacher:
                 teacher = today_lessons_list[lesson_index]['object']
             else:
@@ -84,9 +87,8 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 else:
                     teacher = today_lessons_list[lesson_index]['replacement']
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
-            room = today_lessons_list[lesson_index]['room']
 
-            lesson = f'🕑 <b>{time}</b> | {room}\n' \
+            lesson = f'{emoji} <b>{time}</b> | {room}\n' \
                      f'<i>{title}</i> ({lesson_type})\n' \
                      f'<pre>{teacher}</pre>\n'
             list_of_lessons.append(lesson)

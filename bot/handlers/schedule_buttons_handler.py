@@ -38,14 +38,14 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
                 await week_schedule_display(week='current', callback=callback,
                                             group_id=group_id, isTeacher=isTeacher, state=state)
             except aiogram.utils.exceptions.BadRequest:
-                await callback.message.answer('Сталася помилка!')
+                await callback.message.answer('На жаль, повідомлення з розкладом є надто великим!')
         case 'next_week':
             await callback.answer(text='Розклад на наступний тиждень')
             try:
                 await week_schedule_display(week='next', callback=callback,
                                             group_id=group_id, isTeacher=isTeacher, state=state)
             except aiogram.utils.exceptions.BadRequest:
-                await callback.message.answer('Сталася помилка!')
+                await callback.message.answer('На жаль, повідомлення з розкладом є надто великим!')
         case 'primary':
             primary_status = set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             match primary_status:

@@ -4,8 +4,8 @@ import aiogram.utils.exceptions
 from aiogram import Bot
 from aiogram.dispatcher import FSMContext
 
-from bot.database.schedule_requests import delete_primary
-from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
+from bot.database import schedule_requests
+from bot.keyboards.inline import schedule_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.utils import render_schedule
@@ -37,7 +37,8 @@ async def get_teacher_or_group(primary, message, state):
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
-                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
+                                                                   isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
         else:
@@ -51,7 +52,8 @@ async def get_teacher_or_group(primary, message, state):
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
-                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
+                keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
+                                                                   isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
@@ -81,8 +83,10 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
                                                      user_id=callback.from_user.id)
     try:
         await callback.message.edit_text(text=schedule, parse_mode='HTML',
-                                         reply_markup=get_schedule_keyboard(user=callback.from_user.id,
-                                                                            group_id=group_id, isTeacher=isTeacher))
+                                         reply_markup=schedule_keyboard.get_schedule_keyboard(
+                                             user=callback.from_user.id,
+                                             group_id=group_id, isTeacher=isTeacher)
+                                         )
     except aiogram.utils.exceptions.MessageNotModified:
         pass
 
@@ -100,8 +104,8 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
                                                      isTeacher=isTeacher, state=state,
                                                      user_id=callback.from_user.id)
     try:
-        keyboard = get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
-                                         isTeacher=isTeacher, weekday=number)
+        keyboard = schedule_keyboard.get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
+                                                           isTeacher=isTeacher, weekday=number)
         await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard)
     except aiogram.utils.exceptions.MessageNotModified:
         pass
@@ -113,6 +117,6 @@ async def schedule_exist(user, isTeacher, schedule):
                                text='Вибачте, даний розклад не знайдено чи було видалено',
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
-        delete_primary(user=user, isTeacher=isTeacher)
+        schedule_requests.delete_primary(user=user, isTeacher=isTeacher)
         return False
     return True

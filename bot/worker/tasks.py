@@ -8,7 +8,7 @@ from bot.database.connection import get_user_pref, get_schedule_picked
 from bot.database import schedule_requests
 from bot.utils.render_schedule import get_schedule
 from configs import API_TOKEN
-from loader import logger
+import loader
 
 bot = Bot(token=API_TOKEN)
 
@@ -58,5 +58,5 @@ async def database_cleanup():
         if last_active < data_six_month_before:
             col_schedule.find_one_and_delete({'user_id': user_id})
             col_pref.find_one_and_delete({'user_id': user_id})
-            logger.info(f'User {user_id} (last active: {last_active}) '
+            loader.logger.info(f'User {user_id} (last active: {last_active}) '
                         f'has been deleted during database_cleanup')
