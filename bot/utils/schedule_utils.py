@@ -54,7 +54,7 @@ async def get_teacher_or_group(primary, message, state):
                                                              user_id=message.from_user.id)
             # if schedule validated (primary exist)
             if await schedule_exist(user=message.from_user.id, isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
                                                                    isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
