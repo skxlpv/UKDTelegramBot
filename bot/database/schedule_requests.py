@@ -1,6 +1,7 @@
 from bot.database.connection import get_schedule_picked as get_collection
 from bot.database.serializers import process_text, validate_favorites_quantity
 from bot.utils import update_lact_active
+from loader import logger
 
 
 @update_lact_active
@@ -61,6 +62,8 @@ def set_primary(user, group_id, isTeacher=False):
                            }
                        }, upsert=True)
         return 1
+    logger.error('ERROR occured in set_primary: -1.'
+                 f'UserID: {user}')
     return -1
 
 
