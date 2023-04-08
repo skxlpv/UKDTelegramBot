@@ -37,6 +37,9 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Project logs
+bot/storage/logs
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -130,3 +133,6 @@ dmypy.json
 
 # IDEA
 .idea/
+
+# logs
+/bot/storage/logs/

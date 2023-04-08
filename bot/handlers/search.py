@@ -2,7 +2,6 @@ import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
@@ -13,6 +12,7 @@ from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
+from bot.storage.placeholders import messages
 from bot.utils.api_requests import departments, teachers
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
@@ -25,29 +25,29 @@ from loader import dp, bot
 # GENERAL SEARCH
 @dp.message_handler(state=UserStates.search)
 async def search_schedule(message: types.Message):
-    await message.answer('Будь ласка, оберіть параметри пошуку розкладу', reply_markup=search_keyboard)
+    await message.answer(text=messages.SEARCH_PARAMS, reply_markup=search_keyboard)
     await UserStates.search_options.set()
 
 
 @dp.callback_query_handler(state=UserStates.search_options)
 async def search_options(call: types.CallbackQuery):
     if call.data == 'choice_search':
-        await call.message.edit_text('Вкажіть роль', reply_markup=role_keyboard)
+        await call.message.edit_text(text=messages.CHOOSE_ROLE, reply_markup=role_keyboard)
 
     if call.data == 'manual_search':
-        await call.message.edit_text('Надішліть повну назву шуканої групи')
+        await call.message.edit_text(text=messages.GROUP_FULL_NAME)
         await UserStates.manual_search.set()
 
     if call.data == 'student':
         await call.message.delete()
 
         insert_buttons()
-        await call.message.answer('Оберіть спеціальність', reply_markup=specialties_keyboard)
+        await call.message.answer(text=messages.PICK_SPECIALITY, reply_markup=specialties_keyboard)
         await UserStates.get_specialty.set()
 
     if call.data == 'teacher':
         await call.message.delete()
-        await call.message.answer("Введіть П.І.Б. викладача/-ки")
+        await call.message.answer(text=messages.TEACHER_INITIALS)
         await UserStates.search_teacher.set()
 
 
@@ -55,7 +55,7 @@ async def search_options(call: types.CallbackQuery):
 @dp.message_handler(state=UserStates.get_specialty)
 async def specialty_handler(message: types.Message, state: FSMContext):
     if message.text not in shrinked_specialties_list:
-        await message.answer('Будь ласка, оберіть спеціальність')
+        await message.answer(text=messages.PICK_SPECIALITY_FAIL)
         await UserStates.get_specialty.set()
 
     else:
@@ -81,20 +81,20 @@ async def specialty_handler(message: types.Message, state: FSMContext):
                 new_academic_year = 0
 
             course = (current_year + new_academic_year) - admission_year
-            course_keyboard.insert(f'{course} курс')
-            courses_list.append(f'{course} курс')
+            course_keyboard.insert(messages.COURSE_NUM % course)
+            courses_list.append(messages.COURSE_NUM % course)
 
         year_set.clear()
         clear_keyboard(specialties_keyboard)
 
-        await message.answer('Оберіть курс', reply_markup=course_keyboard)
+        await message.answer(text=messages.COURSE_SELECT, reply_markup=course_keyboard)
         await UserStates.get_year.set()
 
 
 @dp.message_handler(state=UserStates.get_year)
 async def year_handler(message: types.Message, state: FSMContext):
     if message.text not in courses_list:
-        await message.answer('Будь ласка, оберіть курс')
+        await message.answer(text=messages.COURSE_SELECT_FAIL)
         await UserStates.get_year.set()
 
     else:
@@ -130,7 +130,7 @@ async def year_handler(message: types.Message, state: FSMContext):
                 group_keyboard.insert(departments[index]['name'])
                 groups_list.append(departments[index]['name'])
 
-        await message.answer('Оберіть групу', reply_markup=group_keyboard)
+        await message.answer(text=messages.GROUP_SELECT, reply_markup=group_keyboard)
         await UserStates.get_group.set()
 
 
@@ -138,7 +138,7 @@ async def year_handler(message: types.Message, state: FSMContext):
 async def group_handler(message: types.Message, state: FSMContext):
     clear_keyboard(group_keyboard)
     if message.text not in groups_list:
-        await message.answer('Будь ласка, оберіть групу')
+        await message.answer(text=messages.GROUP_SELECT_FAIL)
         await UserStates.get_group.set()
 
     else:
@@ -151,12 +151,12 @@ async def group_handler(message: types.Message, state: FSMContext):
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
                 schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                                  begin_date=today_date, end_date=today_date,
-                                                 isTeacher=False, state=state)
+                                                 isTeacher=False, state=state,
+                                                 user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
-
 
 
 # STUDENT GROUP SEARCH (by group title)
@@ -170,14 +170,15 @@ async def manual_search(message: types.Message, state: FSMContext):
             today_date = datetime.date.today().strftime("%d.%m.%Y")
             schedule = await render_schedule(search_name=group_name, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
-                                             isTeacher=False, state=state)
+                                             isTeacher=False, state=state,
+                                             user_id=message.from_user.id)
             await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
             keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
             await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
             await UserStates.schedule_callback.set()
 
     if group_id is None:
-        await message.answer('Групу не знайдено! Спробуйте ще раз!')
+        await message.answer(text=messages.GROUP_NOT_FOUND)
 
 
 # TEACHER SCHEDULE SEARCH
@@ -201,10 +202,10 @@ async def teacher_search(message: types.Message):
         teacher_keyboard.add(name)
 
     if len(teacher_buttons_set) > 0:
-        await message.answer("Оберіть викладача із запропонованих", reply_markup=teacher_keyboard)
+        await message.answer(text=messages.TEACHER_SELECT, reply_markup=teacher_keyboard)
         await UserStates.get_teacher_schedule.set()
     else:
-        await message.answer("Будь ласка, введіть П.І.Б. викладача")
+        await message.answer(text=messages.TEACHER_INITIALS_FAIL)
 
     teacher_buttons_set.clear()
     clear_keyboard(teacher_keyboard)
@@ -228,14 +229,15 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 today_date = datetime.date.today().strftime("%d.%m.%Y")
                 schedule = await render_schedule(search_name=teacher_name, search_id=teacher_id,
                                                  begin_date=today_date, end_date=today_date,
-                                                 isTeacher=True, state=state)
+                                                 isTeacher=True, state=state,
+                                                 user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text='Ваш розклад:', reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=teacher_id, isTeacher=True)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
                 await UserStates.schedule_callback.set()
 
     if teacher_id is None:
-        await message.answer('Вчителя не знайдено! Спробуйте ще раз!')
+        await message.answer(text=messages.TEACHER_NOT_FOUND)
 
 
 def register_search_handlers(dispatcher: Dispatcher):
