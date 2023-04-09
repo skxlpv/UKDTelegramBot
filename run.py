@@ -4,6 +4,7 @@ from bot.handlers import (search, start, menu, settings,
                           schedule_buttons_handler, settings_buttons_handler,
                           )
 from bot.middlewares.cancel_middleware import CancelMiddleware
+from bot.middlewares.help_middleware import HelpMiddleware
 from bot.middlewares.settings_middleware import SettingsMiddleware
 from bot.middlewares.start_middleware import StartMiddleware
 from loader import dp
@@ -12,6 +13,7 @@ from loader import dp
 dp.middleware.setup(CancelMiddleware())
 dp.middleware.setup(SettingsMiddleware())
 dp.middleware.setup(StartMiddleware())
+dp.middleware.setup(HelpMiddleware())
 
 # Handlers
 start.register_start_handlers(dp)
