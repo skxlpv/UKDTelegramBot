@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 
-from configs import MONGO_HOST, MONGO_PORT, MONGO_PASS, MONGO_USER
+from configs import MONGO_PORT, MONGO_PASS, MONGO_USER, CONTAINER_NAME
 
-client = MongoClient(host=MONGO_HOST,
+client = MongoClient(host=CONTAINER_NAME,
                      port=int(MONGO_PORT),
                      username=MONGO_USER,
                      password=MONGO_PASS,
