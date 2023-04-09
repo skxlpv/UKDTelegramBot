@@ -12,7 +12,7 @@ from loader import dp
 async def start(message: types.Message, state: typing.Union[FSMContext, None]):
     if state:
         await state.finish()
-    await message.answer(text=messages.WELCOME % message.from_user.first_name)
+    await message.answer(text=messages.WELCOME, parse_mode='HTML')
     await menu.menu(message=message)
 
 
