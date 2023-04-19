@@ -18,7 +18,7 @@ file_handler.suffix = '%Y_%m_%d'
 file_handler.namer = lambda name: name.replace('.log', '') + '.log'
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.WARNING)
 
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
