@@ -120,6 +120,6 @@ async def schedule_exist(user, isTeacher, schedule):
                                text=messages.NOT_FOUND_OR_DELETED,
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
-        schedule_requests.delete_primary(user=user, isTeacher=isTeacher)
+        schedule_requests.delete_primary(user=user)
         return False
     return True

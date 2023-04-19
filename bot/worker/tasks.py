@@ -14,7 +14,7 @@ bot = Bot(token=API_TOKEN)
 
 
 async def send_daily_schedule():
-    loader.logger.info('WORKER: method \'send_daily_schedule\' started')
+    loader.logger.info('WORKER: method "send_daily_schedule" started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
@@ -35,7 +35,7 @@ async def send_daily_schedule():
                     group_name = user_primary['teacher_name']
                     isTeacher = True
                 text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=user_id)
-                if text is None or text == '90':
+                if text is None or text in ('1', '2', '3', '4', '5', '6', '60', '70', '80', '90', '100', '200'):
                     continue
                 else:
                     try:
@@ -47,11 +47,11 @@ async def send_daily_schedule():
                         continue
             else:
                 continue
-    loader.logger.info('WORKER: method \'send_daily_schedule\' ended')
+    loader.logger.info('WORKER: method "send_daily_schedule" ended')
 
 
 async def database_cleanup():
-    loader.logger.info('WORKER: method \'database_cleanup\' started')
+    loader.logger.info('WORKER: method "database_cleanup" started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
@@ -67,4 +67,4 @@ async def database_cleanup():
             loader.logger.info(f'User {user_id} (last active: {last_active}) '
                                f'has been deleted during database_cleanup')
 
-    loader.logger.info('WORKER: method \'database_cleanup\' ended')
+    loader.logger.info('WORKER: method database_cleanup" ended')

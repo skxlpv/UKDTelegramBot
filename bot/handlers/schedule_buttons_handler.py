@@ -50,7 +50,7 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
             primary_status = set_primary(user=callback.from_user.id, group_id=group_id, isTeacher=isTeacher)
             match primary_status:
                 case -11:
-                    delete_primary(user=callback.from_user.id, isTeacher=isTeacher)
+                    delete_primary(user=callback.from_user.id)
                     await callback.answer(text=callbacks.NOT_PRIMARY)
                 case 1:
                     await callback.answer(text=callbacks.PRIMARY)

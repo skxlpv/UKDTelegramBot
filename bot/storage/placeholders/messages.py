@@ -58,6 +58,10 @@ DAY_AND_DATE = '<code><u>%s, %s</u></code>'
 LESSON = '%s <b>%s</b> | %s\n' \
          '<i>%s</i> (%s)\n' \
          '<pre>%s</pre>\n'
+ERROR_NOT_EXIST = 'Вибачте, даний розклад відсутній'
+ERROR_BLOCKED = 'Вибачте, розклад заблокований адміністратором'
+ERROR_ERROR = 'Вибачте, виникла помилка, зверніться до адміністратора'
+ERROR_SERVER = 'Вибачте, виникла помилка сервера'
 # schedule_utils
 YOUR_SCHEDULE = 'Ваш розклад:'
 

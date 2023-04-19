@@ -47,7 +47,8 @@ def get_specialty_titles():
     return sorted(titles_set)
 
 
-shrinked_specialties_list = list(get_specialty_titles())
+def shrank_specialties_list():
+    return list(get_specialty_titles())
 
 
 def insert_buttons(buttons_set=None):

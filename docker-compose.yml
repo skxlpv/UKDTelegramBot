@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   mongodb:
+    restart: always
     image: mongo
     env_file:
       - .env
@@ -30,6 +31,10 @@ services:
       - mongodb
 
   bot:
+    restart: always
     depends_on:
       - mongodb
     build: .
+    volumes:
+      - ./:/app
+      - ./bot/storage/logs:/app/storage/logs
