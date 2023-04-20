@@ -2,6 +2,7 @@ from datetime import datetime
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+import loader
 from bot.database.schedule_requests import get_one_if_exist
 from bot.storage.placeholders import buttons
 
@@ -9,7 +10,10 @@ week = InlineKeyboardButton(text=buttons.WEEK, callback_data='week')
 next_week = InlineKeyboardButton(text=buttons.NEXT_WEEK, callback_data='next_week')
 
 
-def get_schedule_keyboard(user, group_id, isTeacher, weekday=datetime.now().weekday()):
+def get_schedule_keyboard(user, group_id, isTeacher, weekday=None):
+    if not weekday:
+        weekday = datetime.now().weekday()
+
     schedule_keyboard = InlineKeyboardMarkup(row_width=3)
 
     mn = InlineKeyboardButton(text=buttons.MONDAY, callback_data='mn')

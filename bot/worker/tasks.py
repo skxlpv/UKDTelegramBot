@@ -21,6 +21,7 @@ async def send_daily_schedule():
     users = col_pref.find()
 
     for user in users:
+        loader.logger.disabled = True
         user_id = user['user_id']
         pref = user['mutable']['morning_schedule']
         if pref is True:
@@ -43,10 +44,13 @@ async def send_daily_schedule():
                     except (ChatNotFound, BotBlocked) as ex:
                         col_schedule.find_one_and_delete({'user_id': user_id})
                         col_pref.find_one_and_delete({'user_id': user_id})
+                        loader.logger.disabled = False
                         loader.logger.error(f'FAILED daily schedule sending. EXCEPTION: {ex}. User: {user_id} deleted')
+                        loader.logger.disabled = True
                         continue
             else:
                 continue
+    loader.logger.disabled = False
     loader.logger.info('WORKER: method "send_daily_schedule" ended')
 
 
