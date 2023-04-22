@@ -91,7 +91,8 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             if object_date != current_date:
                 next_day_of_week = datetime.strptime(object_date, '%d.%m.%Y').weekday()
                 list_of_lessons.append(break_line)
-                list_of_lessons.append(messages.DAY_AND_DATE % (day_of_week_dict[next_day_of_week], object_date))
+                list_of_lessons.append(messages.DAY_AND_DATE % (f'📆 {day_of_week_dict[next_day_of_week]}',
+                                                                f'{object_date}\n'))
                 current_date = object_date
                 day_of_week += next_day_of_week
 

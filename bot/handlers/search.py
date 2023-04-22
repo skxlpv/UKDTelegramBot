@@ -19,7 +19,7 @@ from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
-                                    shrank_specialties_list, specialities_dict)
+                                    specialities_dict)
 from loader import dp, bot
 
 

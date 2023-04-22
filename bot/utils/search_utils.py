@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
@@ -35,72 +36,54 @@ def get_stationary():
     return stationary_list
 
 
-def get_specialty_titles():
-    titles_set = set()
-    for value in range(len(departments)):
-        group_name = departments[value]['name']
-        title = "".join([ch for ch in group_name if ch.isalpha()])
-
-        if title.endswith('с'):
-            title = title[:-1]
-            titles_set.add(title)
-
-    return sorted(titles_set)
-
-
-def shrank_specialties_list():
-    return list(get_specialty_titles())
-
-
 specialities_dict = {
-    "Ак": "Ак (Б)",
+    "А": "191 Архітектура (Б)",
+    "МА": "191 Архітектура (М)",
+    "ДФА": "191 Архітектура (ДФ)",
 
-    "ІПЗ": "121 Інженерія програмного забезпечення (Б)",
-    "МІПЗ": "121 Інженерія програмного забезпечення (М)",
+    "Б": "192 Будівництво (Б)",
+    "МБ": "192 Будівництво (М)",
+
+    "ГРС": "241 Готельно-ресторанна справа (Б)",
 
     "Д": "022 Дизайн (Б)",
     "МД": "022 Дизайн (М)",
 
-    "А": "191 Архітектура та містобудування (Б)",
-    "МА": "191 Архітектура та містобудування (М)",
-    "ДФА": "191 Архітектура та містобудування (ДФ)",
+    "ДФЕ": "151 Економіка (ДФ)",
 
-    "ПТБ": "076 Підриємництво, торгівля та біржова діяльність (Б)",
-    "МПТ": "076 Підприємництво, торгівля та біржова діяльність (М)",
+    "Ж": "061 Журналістика (Б)",
 
-    "ФБС": "072 Фінанси, банківська справа та страхування (Б)",
-    "МФБ": "072 Фінанси, банківська справа та страхування (М)",
+    "ІПЗ": "121 Інженерія ПЗ (Б)",
+    "МІПЗ": "121 Інженерія ПЗ (М)",
 
-    "Б": "192 Будівництво та цивільна інженерія (Б)",
-    "МБ": "192 Будівництво та цивільна інженерія (М)",
+    "Мн": "073 Менеджмент (Б)",
+    "ММ": "025 Музичне мистецтво (Б)",
+
+    "О": "071 Облік та оподаткування (Б)",
+
+    "ПТБ": "076 Підриємництво (Б)",
+    "МПТ": "076 Підприємництво (М)",
 
     "МЮ": "081 Право (М)",
     "Ю": "081 Право (Б)",
     "ДФЮ": "081 Право (ДФ)",
 
-    "ГРС": "241 Готельно-ресторанна справа (Б)",
-
-    "ДФЕ": "191 Економіка (ДФ)",
-
-    "Ж": "061 Журналістика (Б)",
-
-    "ММ": "025 Музичне мистецтво (Б)",
-
-    "Мн": "073 Менеджмент (Б)",
-
-    "О": "071 Облік та оподаткування (Б)",
-
     "Т": "242 Туризм (Б)",
 
+    "ФБС": "072 Фінанси (Б)",
+    "МФБ": "072 Фінанси (М)",
+
     "ФІЛ": "035 Філологія (Б)",
+
+    "Ак": "Ак (Б)",
 }
 
 
-def insert_buttons(buttons_set=None):
-    if buttons_set is None:
-        buttons_set = get_specialty_titles()
-    for each in buttons_set:
-        specialties_keyboard.insert(specialities_dict[each])
+def insert_buttons():
+    sorted(specialities_dict)
+
+    for each in specialities_dict.values():
+        specialties_keyboard.insert(each)
 
 
 def clear_keyboard(keyboard_to_be_cleaned):
