@@ -19,7 +19,7 @@ from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
-                                    shrank_specialties_list)
+                                    shrank_specialties_list, specialities_dict)
 from loader import dp, bot
 
 
@@ -55,16 +55,17 @@ async def search_options(call: types.CallbackQuery):
 # STUDENT GROUP SEARCH (by criteria)
 @dp.message_handler(state=UserStates.get_specialty)
 async def specialty_handler(message: types.Message, state: FSMContext):
-    if message.text not in shrank_specialties_list():
+    if message.text not in specialities_dict.values():
         await message.answer(text=messages.PICK_SPECIALITY_FAIL)
         await UserStates.get_specialty.set()
         loader.logger.error(f'User {message.from_user.id} failed to get specialty "{message.text}"')
     else:
+        specialty = list(specialities_dict.keys())[list(specialities_dict.values()).index(message.text)]
         async with state.proxy() as data:
-            data['specialty'] = message.text + 'с' + '-'
+            data['specialty'] = specialty + 'с' + '-'
 
         for group in get_stationary():
-            if message.text in group:
+            if specialty in group:
                 edited_group = group.partition("-")[2]
                 year = edited_group.partition('-')[0]
                 year_set.add(year)

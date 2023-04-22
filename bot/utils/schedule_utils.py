@@ -11,6 +11,7 @@ from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.storage.placeholders import messages
 from bot.utils import render_schedule
+from bot.utils.get_today_date import get_today_date
 from configs import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
@@ -31,7 +32,7 @@ async def get_teacher_or_group(primary, message, state):
         if 'teacher_name' in primary:
             isTeacher = True
             group_id = primary['teacher_id']
-            today_date = datetime.today().strftime("%d.%m.%Y")
+            today_date = get_today_date().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
                                                              begin_date=today_date, end_date=today_date,
                                                              isTeacher=isTeacher, state=state,
@@ -47,7 +48,7 @@ async def get_teacher_or_group(primary, message, state):
         else:
             isTeacher = False
             group_id = primary['group_id']
-            today_date = datetime.today().strftime("%d.%m.%Y")
+            today_date = get_today_date().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
                                                              begin_date=today_date,
                                                              end_date=today_date, isTeacher=isTeacher, state=state,
