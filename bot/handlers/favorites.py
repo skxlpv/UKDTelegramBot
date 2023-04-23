@@ -10,6 +10,7 @@ from bot.keyboards.reply.favorite_keyboard import favorite_keyboard
 from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.storage.placeholders import messages
+from bot.utils.get_today_date import get_today_date
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import clear_keyboard
 from configs import API_TOKEN
@@ -56,7 +57,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
             found = True
             isTeacher = False
             group_id = obj['group_id']
-            today_date = datetime.date.today().strftime("%d.%m.%Y")
+            today_date = get_today_date().strftime("%d.%m.%Y")
             await state.reset_state()
             schedule = await render_schedule(search_name=message.text, search_id=group_id,
                                              begin_date=today_date, end_date=today_date,
