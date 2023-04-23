@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 
@@ -8,6 +9,8 @@ from aiogram.dispatcher import Dispatcher
 
 from bot.worker.scheduler import scheduler
 from configs import API_TOKEN
+
+os.environ['TZ'] = 'Europe/Kiev'
 
 # Configure logging
 logger = logging.getLogger('BOT_LOG')
