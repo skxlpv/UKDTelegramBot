@@ -42,9 +42,9 @@ async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date
 
 def get_schedule(search_name, search_id, isTeacher, user_id,
                  begin_date=None, end_date=None):
-    if not begin_date:
+    if begin_date is None:
         begin_date = datetime.now().strftime('%d.%m.%Y')
-    if not end_date:
+    if end_date is None:
         end_date = datetime.now().strftime('%d.%m.%Y')
     list_of_lessons = []
     message_of_lessons = ''

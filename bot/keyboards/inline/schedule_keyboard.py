@@ -11,7 +11,7 @@ next_week = InlineKeyboardButton(text=buttons.NEXT_WEEK, callback_data='next_wee
 
 
 def get_schedule_keyboard(user, group_id, isTeacher, weekday=None):
-    if not weekday:
+    if weekday is None:
         weekday = datetime.now().weekday()
 
     schedule_keyboard = InlineKeyboardMarkup(row_width=3)

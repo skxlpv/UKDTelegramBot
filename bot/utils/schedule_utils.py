@@ -65,7 +65,7 @@ async def get_teacher_or_group(primary, message, state):
 
 
 async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=None):
-    if not today:
+    if today is None:
         today = datetime.today()
     weekday = today.weekday()
     data = await state.get_data()
@@ -98,7 +98,7 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
 
 
 async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=None):
-    if not today:
+    if today is None:
         today = datetime.today()
     weekday = today.weekday()
     data = await state.get_data()
