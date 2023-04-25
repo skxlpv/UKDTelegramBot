@@ -11,6 +11,7 @@ from bot.keyboards.reply.menu_keyboard import menu_keyboard
 from bot.states.UserStates import UserStates
 from bot.storage.placeholders import messages
 from bot.utils import render_schedule
+from bot.utils.get_today_date import get_today_date
 from configs import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
@@ -31,7 +32,7 @@ async def get_teacher_or_group(primary, message, state):
         if 'teacher_name' in primary:
             isTeacher = True
             group_id = primary['teacher_id']
-            today_date = datetime.today().strftime("%d.%m.%Y")
+            today_date = get_today_date().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['teacher_name'], search_id=group_id,
                                                              begin_date=today_date, end_date=today_date,
                                                              isTeacher=isTeacher, state=state,
@@ -47,7 +48,7 @@ async def get_teacher_or_group(primary, message, state):
         else:
             isTeacher = False
             group_id = primary['group_id']
-            today_date = datetime.today().strftime("%d.%m.%Y")
+            today_date = get_today_date().strftime("%d.%m.%Y")
             schedule = await render_schedule.render_schedule(search_name=primary['group_name'], search_id=group_id,
                                                              begin_date=today_date,
                                                              end_date=today_date, isTeacher=isTeacher, state=state,
@@ -63,7 +64,9 @@ async def get_teacher_or_group(primary, message, state):
         return False
 
 
-async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=datetime.today()):
+async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMContext, today=None):
+    if today is None:
+        today = datetime.today()
     weekday = today.weekday()
     data = await state.get_data()
     search_name = data['search_name']
@@ -94,7 +97,9 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
         pass
 
 
-async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=datetime.now()):
+async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=None):
+    if today is None:
+        today = datetime.today()
     weekday = today.weekday()
     data = await state.get_data()
     search_name = data['search_name']
@@ -120,6 +125,6 @@ async def schedule_exist(user, isTeacher, schedule):
                                text=messages.NOT_FOUND_OR_DELETED,
                                reply_markup=menu_keyboard)
         await UserStates.menu_handler.set()
-        schedule_requests.delete_primary(user=user, isTeacher=isTeacher)
+        schedule_requests.delete_primary(user=user)
         return False
     return True

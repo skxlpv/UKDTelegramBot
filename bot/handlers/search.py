@@ -3,6 +3,7 @@ import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
+import loader
 from bot.keyboards.inline.role_keyboard import role_keyboard
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
@@ -18,7 +19,7 @@ from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
-                                    shrinked_specialties_list)
+                                    specialities_dict)
 from loader import dp, bot
 
 
@@ -54,16 +55,17 @@ async def search_options(call: types.CallbackQuery):
 # STUDENT GROUP SEARCH (by criteria)
 @dp.message_handler(state=UserStates.get_specialty)
 async def specialty_handler(message: types.Message, state: FSMContext):
-    if message.text not in shrinked_specialties_list:
+    if message.text not in specialities_dict.values():
         await message.answer(text=messages.PICK_SPECIALITY_FAIL)
         await UserStates.get_specialty.set()
-
+        loader.logger.error(f'User {message.from_user.id} failed to get specialty "{message.text}"')
     else:
+        specialty = list(specialities_dict.keys())[list(specialities_dict.values()).index(message.text)]
         async with state.proxy() as data:
-            data['specialty'] = message.text + 'с' + '-'
+            data['specialty'] = specialty + 'с' + '-'
 
         for group in get_stationary():
-            if message.text in group:
+            if specialty in group:
                 edited_group = group.partition("-")[2]
                 year = edited_group.partition('-')[0]
                 year_set.add(year)
@@ -96,7 +98,7 @@ async def year_handler(message: types.Message, state: FSMContext):
     if message.text not in courses_list:
         await message.answer(text=messages.COURSE_SELECT_FAIL)
         await UserStates.get_year.set()
-
+        loader.logger.error(f'User {message.from_user.id} failed to get year "{message.text}"')
     else:
         courses_list.clear()
         current_year = curr_year
@@ -138,6 +140,7 @@ async def year_handler(message: types.Message, state: FSMContext):
 async def group_handler(message: types.Message, state: FSMContext):
     clear_keyboard(group_keyboard)
     if message.text not in groups_list:
+        loader.logger.error(f'User {message.from_user.id} failed to get group "{message.text}"')
         await message.answer(text=messages.GROUP_SELECT_FAIL)
         await UserStates.get_group.set()
 
@@ -178,6 +181,7 @@ async def manual_search(message: types.Message, state: FSMContext):
             await UserStates.schedule_callback.set()
 
     if group_id is None:
+        loader.logger.info(f'User {message.from_user.id} not found group "{message.text}"')
         await message.answer(text=messages.GROUP_NOT_FOUND)
 
 
@@ -205,6 +209,7 @@ async def teacher_search(message: types.Message):
         await message.answer(text=messages.TEACHER_SELECT, reply_markup=teacher_keyboard)
         await UserStates.get_teacher_schedule.set()
     else:
+        loader.logger.info(f'User {message.from_user.id} not found teacher "{message.text}"')
         await message.answer(text=messages.TEACHER_INITIALS_FAIL)
 
     teacher_buttons_set.clear()
@@ -237,6 +242,7 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                 await UserStates.schedule_callback.set()
 
     if teacher_id is None:
+        loader.logger.info(f'User {message.from_user.id} not found teacher "{message.text}"')
         await message.answer(text=messages.TEACHER_NOT_FOUND)
 
 

@@ -14,13 +14,14 @@ bot = Bot(token=API_TOKEN)
 
 
 async def send_daily_schedule():
-    loader.logger.info('WORKER: method \'send_daily_schedule\' started')
+    loader.logger.info('WORKER: method "send_daily_schedule" started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
     users = col_pref.find()
 
     for user in users:
+        loader.logger.disabled = True
         user_id = user['user_id']
         pref = user['mutable']['morning_schedule']
         if pref is True:
@@ -35,7 +36,7 @@ async def send_daily_schedule():
                     group_name = user_primary['teacher_name']
                     isTeacher = True
                 text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=user_id)
-                if text is None or text == '90':
+                if text is None or text in ('1', '2', '3', '4', '5', '6', '60', '70', '80', '90', '100', '200'):
                     continue
                 else:
                     try:
@@ -43,15 +44,18 @@ async def send_daily_schedule():
                     except (ChatNotFound, BotBlocked) as ex:
                         col_schedule.find_one_and_delete({'user_id': user_id})
                         col_pref.find_one_and_delete({'user_id': user_id})
+                        loader.logger.disabled = False
                         loader.logger.error(f'FAILED daily schedule sending. EXCEPTION: {ex}. User: {user_id} deleted')
+                        loader.logger.disabled = True
                         continue
             else:
                 continue
-    loader.logger.info('WORKER: method \'send_daily_schedule\' ended')
+    loader.logger.disabled = False
+    loader.logger.info('WORKER: method "send_daily_schedule" ended')
 
 
 async def database_cleanup():
-    loader.logger.info('WORKER: method \'database_cleanup\' started')
+    loader.logger.info('WORKER: method "database_cleanup" started')
     col_pref = get_user_pref()
     col_schedule = get_schedule_picked()
 
@@ -67,4 +71,4 @@ async def database_cleanup():
             loader.logger.info(f'User {user_id} (last active: {last_active}) '
                                f'has been deleted during database_cleanup')
 
-    loader.logger.info('WORKER: method \'database_cleanup\' ended')
+    loader.logger.info('WORKER: method database_cleanup" ended')

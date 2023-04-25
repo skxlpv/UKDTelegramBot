@@ -1,5 +1,7 @@
 import logging
-from logging.handlers import RotatingFileHandler
+import os
+import re
+from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 
 from aiogram import Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -8,15 +10,18 @@ from aiogram.dispatcher import Dispatcher
 from bot.worker.scheduler import scheduler
 from configs import API_TOKEN
 
+os.environ['TZ'] = 'Europe/Kiev'
+
 # Configure logging
 logger = logging.getLogger('BOT_LOG')
 logger.setLevel(logging.INFO)
 
-file_handler = RotatingFileHandler('bot/storage/logs/bot_log', maxBytes=1024*1024, backupCount=100)
-file_handler.setLevel(logging.INFO)
+file_handler = TimedRotatingFileHandler('bot/storage/logs/bot_log.log', when='W0', backupCount=100)
+file_handler.suffix = '%Y_%m_%d'
+file_handler.namer = lambda name: name.replace('.log', '') + '.log'
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.WARNING)
 
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 

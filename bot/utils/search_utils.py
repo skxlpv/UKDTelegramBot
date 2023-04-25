@@ -1,15 +1,17 @@
 import datetime
+import logging
 
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.utils.api_requests import departments
+from bot.utils.get_today_date import get_today_date
 
 teacher_list = []
 teacher_buttons_set = set()
 
-curr_year = datetime.date.today().year - 2000   # Remove thousands, keep only tens
+curr_year = get_today_date().year - 2000  # Remove thousands, keep only tens
 year_set = set()
 courses_list = []
 groups_list = []
@@ -34,26 +36,53 @@ def get_stationary():
     return stationary_list
 
 
-def get_specialty_titles():
-    titles_set = set()
-    for value in range(len(departments)):
-        group_name = departments[value]['name']
-        title = "".join([ch for ch in group_name if ch.isalpha()])
+specialities_dict = {
+    "А": "191 Архітектура (Б)",
+    "МА": "191 Архітектура (М)",
+    "ДФА": "191 Архітектура (ДФ)",
 
-        if title.endswith('с'):
-            title = title[:-1]
-            titles_set.add(title)
+    "Б": "192 Будівництво (Б)",
+    "МБ": "192 Будівництво (М)",
 
-    return sorted(titles_set)
+    "ГРС": "241 Готельно-ресторанна справа (Б)",
+
+    "Д": "022 Дизайн (Б)",
+    "МД": "022 Дизайн (М)",
+
+    "ДФЕ": "151 Економіка (ДФ)",
+
+    "Ж": "061 Журналістика (Б)",
+
+    "ІПЗ": "121 Інженерія ПЗ (Б)",
+    "МІПЗ": "121 Інженерія ПЗ (М)",
+
+    "Мн": "073 Менеджмент (Б)",
+    "ММ": "025 Музичне мистецтво (Б)",
+
+    "О": "071 Облік та оподаткування (Б)",
+
+    "ПТБ": "076 Підриємництво (Б)",
+    "МПТ": "076 Підприємництво (М)",
+
+    "МЮ": "081 Право (М)",
+    "Ю": "081 Право (Б)",
+    "ДФЮ": "081 Право (ДФ)",
+
+    "Т": "242 Туризм (Б)",
+
+    "ФБС": "072 Фінанси (Б)",
+    "МФБ": "072 Фінанси (М)",
+
+    "ФІЛ": "035 Філологія (Б)",
+
+    "Ак": "Ак (Б)",
+}
 
 
-shrinked_specialties_list = list(get_specialty_titles())
+def insert_buttons():
+    sorted(specialities_dict)
 
-
-def insert_buttons(buttons_set=None):
-    if buttons_set is None:
-        buttons_set = get_specialty_titles()
-    for each in buttons_set:
+    for each in specialities_dict.values():
         specialties_keyboard.insert(each)
 
 

@@ -16,7 +16,7 @@ async def callback_settings_buttons(callback: types.CallbackQuery):
         case str(additional_courses):
             toggle_pref(user=user, param=additional_courses)
 
-        case morning_schedule:
+        case str(morning_schedule):
             toggle_pref(user=user, param=morning_schedule)
 
     keyboard = get_settings_keyboard(user)
