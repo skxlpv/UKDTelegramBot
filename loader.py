@@ -16,7 +16,7 @@ os.environ['TZ'] = 'Europe/Kiev'
 logger = logging.getLogger('BOT_LOG')
 logger.setLevel(logging.INFO)
 
-file_handler = TimedRotatingFileHandler('bot/storage/logs/bot_log.log', when='W0', backupCount=100)
+file_handler = TimedRotatingFileHandler('bot/storage/logs/bot_log.log', when='W1', backupCount=100)
 file_handler.suffix = '%Y_%m_%d'
 file_handler.namer = lambda name: name.replace('.log', '') + '.log'
 

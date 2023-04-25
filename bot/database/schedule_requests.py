@@ -45,7 +45,7 @@ def set_favorites(user, group_id, isTeacher=False):
                            }, upsert=True)
             loader.logger.info(f'User {user} set favorites: id-{group_id}, teacher-{isTeacher}')
             return 1
-        elif validation == -11:
+        elif validation == -10:
             loader.logger.error(f'User {user} ERROR occurred in set_favorites: {validation}: limit exceed')
         return validation
     loader.logger.error(f'User {user} ERROR occurred in set_favorites: -1: id-{group_id}, teacher-{isTeacher}')
