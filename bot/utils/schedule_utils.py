@@ -98,13 +98,18 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
 
 
 async def day_schedule_display(number, callback, group_id, isTeacher, state: FSMContext, today=None):
+    saturday = 5
+    sunday = 6
     if today is None:
         today = datetime.today()
     weekday = today.weekday()
     data = await state.get_data()
     search_name = data['search_name']
-
     monday = today - timedelta(days=(weekday - number))
+
+    if weekday == saturday or weekday == sunday:
+        monday += timedelta(days=7)  # get next week monday
+
     date = monday.strftime('%d.%m.%Y')
 
     schedule = await render_schedule.render_schedule(search_name=search_name, search_id=group_id,
