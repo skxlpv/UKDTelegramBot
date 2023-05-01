@@ -1,7 +1,6 @@
 import logging
 import os
-import re
-from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+from logging.handlers import RotatingFileHandler
 
 from aiogram import Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -16,9 +15,22 @@ os.environ['TZ'] = 'Europe/Kiev'
 logger = logging.getLogger('BOT_LOG')
 logger.setLevel(logging.INFO)
 
-file_handler = TimedRotatingFileHandler('bot/storage/logs/bot_log.log', when='W1', backupCount=100)
-file_handler.suffix = '%Y_%m_%d'
-file_handler.namer = lambda name: name.replace('.log', '') + '.log'
+
+class MyRotatingFileHandler(RotatingFileHandler):
+    def doRollover(self):
+
+        with open(self.baseFilename, 'r') as f:
+            lines = f.readlines()
+            last_lines = lines[-100:]
+
+        super().doRollover()
+
+        with open(self.baseFilename, 'w') as f:
+            f.writelines(last_lines)
+
+
+file_handler = MyRotatingFileHandler('bot/storage/logs/bot_log.log',
+                                     maxBytes=15*1024*1024, backupCount=0)
 
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.WARNING)

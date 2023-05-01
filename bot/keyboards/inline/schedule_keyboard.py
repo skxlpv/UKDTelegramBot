@@ -2,7 +2,6 @@ from datetime import datetime
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-import loader
 from bot.database.schedule_requests import get_one_if_exist
 from bot.storage.placeholders import buttons
 

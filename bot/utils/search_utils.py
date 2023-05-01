@@ -1,6 +1,3 @@
-import datetime
-import logging
-
 from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
