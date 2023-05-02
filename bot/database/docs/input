@@ -1,0 +1,22 @@
+SCHEDULE
+set_primary,                user:           message.from_user.id
+set_favorites               group_id:       int - teacher or group id
+                            isTeacher       bool - False by default, True if teacher
+
+
+get_from_collection         user:           message.from_user.id
+                            action:         str: 'primary' | 'favorites'
+
+
+delete_favorite             user:           message.from_user.id
+                            group_id:       int - teacher or group id
+                            isTeacher       bool - False by default, True if teacher
+
+
+PREFERENCES
+initialize_user_pref        user:           message.from_user.id
+
+get_preferences             user:           message.from_user.id
+
+toggle_pref                 user:           message.from_user.id
+                            param:          str: 'additional_courses' | 'morning_schedule' | 'show_facts'

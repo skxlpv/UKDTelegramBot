@@ -1,0 +1,28 @@
+SCHEDULE
+get_from_collection
+-20 - nor primary nor favorites are set
+-100 - not correct action
+
+set_favorites
+1 - success
+-1 - wrong group or teacher name
+-10 - favorites limit reached
+
+set_primary
+1 - success
+-1 - wrong group or teacher name
+-11 - duplication; item is already in favorites
+
+delete_favorite
+1 - always
+
+PREFERENCES
+initialize_user_pref
+nothing
+
+get_preferences
+nothing
+
+toggle_pref
+1 - success
+-100 - not correct action
