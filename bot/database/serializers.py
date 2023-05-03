@@ -1,8 +1,10 @@
 from bot.database import schedule_requests as request
-from bot.utils.api_requests import departments, teachers
+from bot.utils.api_requests import get_departments, get_teachers
 
 
 def process_text(group_id, isTeacher=False):
+    departments = get_departments()
+    teachers = get_teachers()
     if not isTeacher:
         for index in range(len(departments)):
             if group_id == departments[index]['ID']:
