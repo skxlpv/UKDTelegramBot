@@ -2,7 +2,7 @@ from bot.keyboards.reply.course_keyboard import course_keyboard
 from bot.keyboards.reply.group_keyboard import group_keyboard
 from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
-from bot.utils.api_requests import departments
+from bot.utils.api_requests import get_departments
 from bot.utils.get_today_date import get_today_date
 
 teacher_list = []
@@ -23,6 +23,7 @@ list_of_all_keyboards = [
 
 
 def get_stationary():
+    departments = get_departments()
     for value in range(len(departments)):
         group = departments[value]['name']
         title = "".join([ch for ch in group if ch.isalpha()])

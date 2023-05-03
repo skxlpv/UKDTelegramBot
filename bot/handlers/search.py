@@ -14,7 +14,7 @@ from bot.keyboards.reply.specialties_keyboard import specialties_keyboard
 from bot.keyboards.reply.teacher_keyboard import teacher_keyboard
 from bot.states.UserStates import UserStates
 from bot.storage.placeholders import messages
-from bot.utils.api_requests import departments, teachers
+from bot.utils.api_requests import get_departments, get_teachers
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
                                     year_set, get_stationary, teacher_list,
@@ -127,6 +127,8 @@ async def year_handler(message: types.Message, state: FSMContext):
 
         clear_keyboard(course_keyboard)
 
+        departments = get_departments()
+
         for index in range(len(departments)):
             if specialty_and_year in departments[index]['name']:
                 group_keyboard.insert(departments[index]['name'])
@@ -147,6 +149,7 @@ async def group_handler(message: types.Message, state: FSMContext):
     else:
         groups_list.clear()
         group_name = message.text
+        departments = get_departments()
 
         for index in range(len(departments)):
             if group_name == departments[index]['name']:
@@ -167,6 +170,8 @@ async def group_handler(message: types.Message, state: FSMContext):
 async def manual_search(message: types.Message, state: FSMContext):
     group_id = None
     group_name = message.text
+    departments = get_departments()
+
     for index in range(len(departments)):
         if group_name.lower() == departments[index]['name'].lower():
             group_id = departments[index]['ID']
@@ -189,6 +194,7 @@ async def manual_search(message: types.Message, state: FSMContext):
 @dp.message_handler(state=UserStates.search_teacher)
 async def teacher_search(message: types.Message):
     received_teacher_name = message.text
+    teachers = get_teachers()
 
     for index in range(len(teachers)):
         all_teachers = teachers[index]['objects']
@@ -220,6 +226,7 @@ async def teacher_search(message: types.Message):
 async def get_teacher_schedule(message: types.Message, state: FSMContext):
     teacher_id = None
     teacher_name = message.text
+    teachers = get_teachers()
 
     for index in range(len(teachers)):
         all_teachers = teachers[index]['objects']
