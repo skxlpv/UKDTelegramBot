@@ -124,13 +124,15 @@ async def year_handler(message: types.Message, state: FSMContext):
             data['year'] = str(year_of_admission)
 
         specialty_and_year = data['specialty'] + data['year']
+        master_specialty_and_year = f'М{specialty_and_year}'
 
         clear_keyboard(course_keyboard)
 
         departments = get_departments()
 
         for index in range(len(departments)):
-            if specialty_and_year in departments[index]['name']:
+            if departments[index]['name'].startswith(specialty_and_year) \
+                    or departments[index]['name'].startswith(master_specialty_and_year):
                 group_keyboard.insert(departments[index]['name'])
                 groups_list.append(departments[index]['name'])
 
