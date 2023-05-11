@@ -85,6 +85,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             time = today_lessons_list[lesson_index]['lesson_time']
             title = today_lessons_list[lesson_index]['title']
             lesson_type = today_lessons_list[lesson_index]['type']
+            half = today_lessons_list[lesson_index]['half']
             room = today_lessons_list[lesson_index]['room']
             emoji = '🕑'
 
@@ -112,7 +113,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                     teacher = today_lessons_list[lesson_index]['replacement']
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
 
-            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, teacher)
+            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher)
             list_of_lessons.append(lesson)
 
     else:

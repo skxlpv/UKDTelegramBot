@@ -57,7 +57,7 @@ CLASSES_QUANTITY = f'{BREAK_LINE}\n' \
 SEARCH_NAME = '<code><u>%s</u></code>'
 DAY_AND_DATE = '<code><u>%s, %s</u></code>'
 LESSON = '%s <b>%s</b> | %s\n' \
-         '<i>%s</i> (%s)\n' \
+         '<i>%s</i> (%s) (%s)\n' \
          '<pre>%s</pre>\n'
 ERROR_NOT_EXIST = 'Отакої! Даний розклад відсутній'
 ERROR_BLOCKED = 'Розклад заблокований адміністратором'
