@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 import requests
 from aiogram.dispatcher import FSMContext
@@ -48,6 +49,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
         end_date = datetime.now().strftime('%d.%m.%Y')
     list_of_lessons = []
     message_of_lessons = ''
+    lessons_quantity = 0
     break_line = messages.BREAK_LINE
     # perform request based on isTeacher arg
     if isTeacher:
@@ -70,8 +72,6 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
     today_lessons_list = obj['psrozklad_export']['roz_items']
     list_of_lessons.append(messages.SEARCH_NAME % search_name)
 
-    schedule_statistics = messages.CLASSES_QUANTITY % len(today_lessons_list)
-
     # generate list of lessons
     if len(today_lessons_list) > 0:
         day_of_week = 0
@@ -84,11 +84,12 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             object_date = today_lessons_list[lesson_index]['date']
             time = today_lessons_list[lesson_index]['lesson_time']
             title = today_lessons_list[lesson_index]['title']
-            lesson_type = today_lessons_list[lesson_index]['type']
+            str_lesson_type = today_lessons_list[lesson_index]['type']
             str_half = today_lessons_list[lesson_index]['half']
             room = today_lessons_list[lesson_index]['room']
             emoji = '🕑'
-            
+
+            lesson_type = f'({str_lesson_type})' if str_lesson_type != '' else str_lesson_type
             half = f'({str_half})' if str_half != '' else str_half
 
             if object_date != current_date:
@@ -115,17 +116,27 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                     teacher = today_lessons_list[lesson_index]['replacement']
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
 
+            tags = re.findall('(<.*?>)', title)
+
+            for tag in tags:
+                title = title.replace(tag, '')
+
             lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher)
+
             list_of_lessons.append(lesson)
+            lessons_quantity += 1
 
     else:
+        return None
+
+    if lessons_quantity == 0:
         return None
 
     # glue all the lessons into one single message
     for each in list_of_lessons:
         message_of_lessons += each + '\n'
 
-    message_of_lessons += schedule_statistics
+    message_of_lessons += messages.CLASSES_QUANTITY % lessons_quantity
 
     # return a single string of lessons
     loader.logger.info(f'User {user_id} got data from API with search_id: {search_id}, '
