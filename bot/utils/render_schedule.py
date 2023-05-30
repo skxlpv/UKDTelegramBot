@@ -85,9 +85,11 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             time = today_lessons_list[lesson_index]['lesson_time']
             title = today_lessons_list[lesson_index]['title']
             lesson_type = today_lessons_list[lesson_index]['type']
-            half = today_lessons_list[lesson_index]['half']
+            str_half = today_lessons_list[lesson_index]['half']
             room = today_lessons_list[lesson_index]['room']
             emoji = '🕑'
+            
+            half = f'({str_half})' if str_half != '' else str_half
 
             if object_date != current_date:
                 next_day_of_week = datetime.strptime(object_date, '%d.%m.%Y').weekday()
