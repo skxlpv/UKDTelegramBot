@@ -43,7 +43,7 @@ async def get_teacher_or_group(primary, message, state):
                                        reply_markup=menu_keyboard)
                 keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
                                                                    isTeacher=isTeacher)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
         else:
             isTeacher = False
@@ -58,7 +58,7 @@ async def get_teacher_or_group(primary, message, state):
                 await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = schedule_keyboard.get_schedule_keyboard(user=message.from_user.id, group_id=group_id,
                                                                    isTeacher=isTeacher)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
     else:  # if primary DOES NOT EXIST
         return False
@@ -91,7 +91,7 @@ async def week_schedule_display(week, callback, group_id, isTeacher, state: FSMC
         await callback.message.edit_text(text=schedule, parse_mode='HTML',
                                          reply_markup=schedule_keyboard.get_schedule_keyboard(
                                              user=callback.from_user.id,
-                                             group_id=group_id, isTeacher=isTeacher)
+                                             group_id=group_id, isTeacher=isTeacher), disable_web_page_preview=True
                                          )
     except aiogram.utils.exceptions.MessageNotModified:
         pass
@@ -119,7 +119,8 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
     try:
         keyboard = schedule_keyboard.get_schedule_keyboard(user=callback.from_user.id, group_id=group_id,
                                                            isTeacher=isTeacher, weekday=number)
-        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard)
+        await callback.message.edit_text(text=schedule, parse_mode='HTML', reply_markup=keyboard,
+                                         disable_web_page_preview=True)
     except aiogram.utils.exceptions.MessageNotModified:
         pass
 

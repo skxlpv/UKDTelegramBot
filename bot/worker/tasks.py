@@ -40,7 +40,7 @@ async def send_daily_schedule():
                     continue
                 else:
                     try:
-                        await bot.send_message(chat_id=user_id, text=text, parse_mode='HTML')
+                        await bot.send_message(chat_id=user_id, text=text, parse_mode='HTML', disable_web_page_preview=True)
                     except (ChatNotFound, BotBlocked) as ex:
                         col_schedule.find_one_and_delete({'user_id': user_id})
                         col_pref.find_one_and_delete({'user_id': user_id})

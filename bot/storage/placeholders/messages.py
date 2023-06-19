@@ -27,7 +27,7 @@ PICK_SPECIALITY_FAIL = 'Будь ласка, оберіть спеціальні
 TEACHER_SELECT = "Оберіть викладача із запропонованих:"
 TEACHER_INITIALS = "Введіть П.І.Б. викладача/-ки:"
 TEACHER_INITIALS_FAIL = "Будь ласка, введіть П.І.Б. викладача/ки:"
-TEACHER_NOT_FOUND = 'Вчителя не знайдено! Спробуйте ще раз!'
+TEACHER_NOT_FOUND = 'Викладача не знайдено! Спробуйте ще раз!'
 
 COURSE_NUM = '%s курс'
 COURSE_SELECT = 'Оберіть курс:'
@@ -59,6 +59,8 @@ DAY_AND_DATE = '<code><u>%s, %s</u></code>'
 LESSON = '%s <b>%s</b> | %s\n' \
          '<i>%s</i> %s %s\n' \
          '<pre>%s</pre>\n'
+ADDITIONS_TO_LESSON = '\n%s\n' \
+                      '%s\n'
 ERROR_NOT_EXIST = 'Отакої! Даний розклад відсутній'
 ERROR_BLOCKED = 'Розклад заблокований адміністратором'
 ERROR_ERROR = 'Халепа! Схоже, виникла помилка. Зверніться до адміністратора'

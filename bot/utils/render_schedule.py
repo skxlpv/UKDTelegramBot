@@ -87,7 +87,20 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             str_lesson_type = today_lessons_list[lesson_index]['type']
             str_half = today_lessons_list[lesson_index]['half']
             room = today_lessons_list[lesson_index]['room']
+            comment4link = today_lessons_list[lesson_index]['comment4link']
+            link = today_lessons_list[lesson_index]['link']
+            online = today_lessons_list[lesson_index]['online']
+
+            if room == '' and online == 'Так':
+                room = 'Онлайн'
+
             emoji = '🕑'
+
+            tags = re.findall('(<.*?>)', comment4link)
+
+            for tag in tags:
+                comment4link = comment4link.replace(tag, '') if tag not in ('<b>', '</b>', '<i>', '</i>') \
+                    else comment4link
 
             lesson_type = f'({str_lesson_type})' if str_lesson_type != '' else str_lesson_type
             half = f'({str_half})' if str_half != '' else str_half
@@ -122,6 +135,16 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 title = title.replace(tag, '')
 
             lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher)
+
+            if comment4link == '' and link == '':
+                pass
+            elif comment4link == '':
+                lesson += f'{link}\n'
+            elif link == '':
+                lesson += f'\n{comment4link}\n'
+            else:
+                lesson += f'\n{comment4link}\n'\
+                          f'{link}\n'
 
             list_of_lessons.append(lesson)
             lessons_quantity += 1
