@@ -69,7 +69,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
                                     isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
 
         elif 'teacher_name' in obj and obj['teacher_name'] == favorite:
@@ -88,7 +88,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
                                     isTeacher=isTeacher, schedule=schedule):
                 await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
 
     if not found:

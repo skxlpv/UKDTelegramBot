@@ -163,7 +163,7 @@ async def group_handler(message: types.Message, state: FSMContext):
                                                  user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
 
 
@@ -184,7 +184,7 @@ async def manual_search(message: types.Message, state: FSMContext):
                                              user_id=message.from_user.id)
             await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
             keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
-            await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+            await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
             await UserStates.schedule_callback.set()
 
     if group_id is None:
@@ -247,7 +247,7 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
                                                  user_id=message.from_user.id)
                 await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=teacher_id, isTeacher=True)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard)
+                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
 
     if teacher_id is None:
