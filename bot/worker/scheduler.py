@@ -6,7 +6,7 @@ from bot.worker.tasks import send_daily_schedule, database_cleanup
 scheduler = AsyncIOScheduler()
 
 morning_trigger = CronTrigger(
-    month="1-5, 9-12",
+    month="1-6, 9-12",
     hour="6",
     day_of_week='mon-fri',
     timezone='Europe/Kyiv'
