@@ -76,8 +76,8 @@ async def specialty_handler(message: types.Message, state: FSMContext):
             current_year = curr_year
             admission_year = int(admission_year)
 
-            # If current month is september or further
-            if datetime.date.today().month >= 9:
+            # If current month is july or further
+            if datetime.date.today().month >= 7:
                 new_academic_year = 1
             else:
                 new_academic_year = 0
@@ -107,7 +107,7 @@ async def year_handler(message: types.Message, state: FSMContext):
         new_academic_year = 0
 
         # If current month is september or further
-        if current_month >= 9:
+        if current_month >= 7:
             new_academic_year = 1
 
         match message.text:
