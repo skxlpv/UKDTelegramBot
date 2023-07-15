@@ -64,8 +64,10 @@ async def specialty_handler(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['specialty'] = specialty + 'с' + '-'
 
+        specialty = data.get('specialty')
+
         for group in get_stationary():
-            if specialty in group:
+            if group.startswith(specialty) or group.startswith(f'М{specialty}'):
                 edited_group = group.partition("-")[2]
                 year = edited_group.partition('-')[0]
                 year_set.add(year)
