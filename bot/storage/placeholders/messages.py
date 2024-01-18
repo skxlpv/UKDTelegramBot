@@ -20,6 +20,8 @@ TIP_ANSWER = f'Натисніть кнопку <b><i>{buttons.FIND_SCHEDULE}</i>
 SEARCH_PARAMS = 'Будь ласка, оберіть параметри пошуку розкладу: '
 CHOOSE_ROLE = 'Вкажіть роль:'
 GROUP_FULL_NAME = 'Надішліть повну назву шуканої групи:'
+DEGREE_TYPE = 'Оберіть форму навчання'
+INSTITUTION_TYPE = 'Оберіть НЗ'
 
 PICK_SPECIALITY = 'Оберіть спеціальність:'
 PICK_SPECIALITY_FAIL = 'Будь ласка, оберіть спеціальність:'

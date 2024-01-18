@@ -7,6 +7,12 @@ FAVORITES = 'Обране'
 STUDENT = 'Студент/ка'
 TEACHER = 'Викладач/ка'
 
+STATIONARY = 'Денна'
+DUAL = 'Дуальна'
+
+UNIVERSITY = 'Університет'
+COLLEGE = 'Коледж'
+
 # schedule_keyboard
 MONDAY = 'Пн'
 TUESDAY = 'Вт'

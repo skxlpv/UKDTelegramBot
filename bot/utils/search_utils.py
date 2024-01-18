@@ -22,18 +22,6 @@ list_of_all_keyboards = [
 ]
 
 
-def get_stationary():
-    departments = get_departments()
-    for value in range(len(departments)):
-        group = departments[value]['name']
-        title = "".join([ch for ch in group if ch.isalpha()])
-
-        if title.endswith('с'):
-            stationary_list.append(group)
-
-    return stationary_list
-
-
 specialities_dict = {
     "А": "Архітектура",
     "Ак": "Архітектура (Акс)",

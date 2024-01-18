@@ -4,7 +4,7 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 import loader
-from bot.keyboards.inline.role_keyboard import role_keyboard
+from bot.keyboards.inline.role_keyboard import role_keyboard, degree_type_keyboard, institution_keyboard
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.inline.search_keyboard import search_keyboard
 from bot.keyboards.reply.course_keyboard import course_keyboard
@@ -17,7 +17,7 @@ from bot.storage.placeholders import messages
 from bot.utils.api_requests import get_departments, get_teachers
 from bot.utils.render_schedule import render_schedule
 from bot.utils.search_utils import (insert_buttons, courses_list, groups_list,
-                                    year_set, get_stationary, teacher_list,
+                                    year_set, teacher_list,
                                     teacher_buttons_set, clear_keyboard, curr_year,
                                     specialities_dict)
 from loader import dp, bot
@@ -31,25 +31,51 @@ async def search_schedule(message: types.Message):
 
 
 @dp.callback_query_handler(state=UserStates.search_options)
-async def search_options(call: types.CallbackQuery):
-    if call.data == 'choice_search':
-        await call.message.edit_text(text=messages.CHOOSE_ROLE, reply_markup=role_keyboard)
+async def search_options(call: types.CallbackQuery, state: FSMContext):
+    match call.data:
+        case 'choice_search':
+            await call.message.edit_text(text=messages.CHOOSE_ROLE, reply_markup=role_keyboard)
+        case 'manual_search':
+            await call.message.edit_text(text=messages.GROUP_FULL_NAME)
+            await UserStates.manual_search.set()
 
-    if call.data == 'manual_search':
-        await call.message.edit_text(text=messages.GROUP_FULL_NAME)
-        await UserStates.manual_search.set()
+        case 'student':
+            await call.message.edit_text(text=messages.INSTITUTION_TYPE, reply_markup=institution_keyboard)
 
-    if call.data == 'student':
-        await call.message.delete()
+        case 'teacher':
+            await call.message.delete()
+            await call.message.answer(text=messages.TEACHER_INITIALS)
+            await UserStates.search_teacher.set()
 
-        insert_buttons()
-        await call.message.answer(text=messages.PICK_SPECIALITY, reply_markup=specialties_keyboard)
-        await UserStates.get_specialty.set()
+        case 'university':
+            await call.message.edit_text(text=messages.DEGREE_TYPE, reply_markup=degree_type_keyboard)
+            async with state.proxy() as data:
+                data['institution'] = ''
 
-    if call.data == 'teacher':
-        await call.message.delete()
-        await call.message.answer(text=messages.TEACHER_INITIALS)
-        await UserStates.search_teacher.set()
+        case 'college':
+            await call.message.edit_text(text=messages.DEGREE_TYPE, reply_markup=degree_type_keyboard)
+            async with state.proxy() as data:
+                data['institution'] = 'К'
+
+        case 'stationary':
+            await call.message.delete()
+
+            async with state.proxy() as data:
+                data['degree_type'] = 'с'
+
+            insert_buttons()
+            await call.message.answer(text=messages.PICK_SPECIALITY, reply_markup=specialties_keyboard)
+            await UserStates.get_specialty.set()
+
+        case 'dual':
+            await call.message.delete()
+
+            async with state.proxy() as data:
+                data['degree_type'] = 'д'
+
+            insert_buttons()
+            await call.message.answer(text=messages.PICK_SPECIALITY, reply_markup=specialties_keyboard)
+            await UserStates.get_specialty.set()
 
 
 # STUDENT GROUP SEARCH (by criteria)
@@ -62,13 +88,17 @@ async def specialty_handler(message: types.Message, state: FSMContext):
     else:
         specialty = list(specialities_dict.keys())[list(specialities_dict.values()).index(message.text)]
         async with state.proxy() as data:
-            data['specialty'] = specialty + 'с' + '-'
+            data['specialty'] = data['institution'] + specialty + data['degree_type'] + '-'
 
         specialty = data.get('specialty')
+        master_specialty = f'{specialty}'
 
-        for group in get_stationary():
-            if group.startswith(specialty) or group.startswith(f'М{specialty}'):
-                edited_group = group.partition("-")[2]
+        departments = get_departments()
+        for index in range(len(departments)):
+            group_name = departments[index]['name']
+            if group_name.startswith(specialty) \
+                    or group_name.startswith(master_specialty):
+                edited_group = group_name.partition("-")[2]
                 year = edited_group.partition('-')[0]
                 year_set.add(year)
 
@@ -132,11 +162,13 @@ async def year_handler(message: types.Message, state: FSMContext):
 
         departments = get_departments()
 
+        # Do NOT optimize it with 'in' in the future, because ІПЗс-21-2 in КІПЗс-21-2
         for index in range(len(departments)):
-            if departments[index]['name'].startswith(specialty_and_year) \
-                    or departments[index]['name'].startswith(master_specialty_and_year):
-                group_keyboard.insert(departments[index]['name'])
-                groups_list.append(departments[index]['name'])
+            group_name = departments[index]['name']
+            if group_name.startswith(specialty_and_year) \
+                    or group_name.startswith(master_specialty_and_year):
+                group_keyboard.insert(group_name)
+                groups_list.append(group_name)
 
         await message.answer(text=messages.GROUP_SELECT, reply_markup=group_keyboard)
         await UserStates.get_group.set()
@@ -252,6 +284,7 @@ async def group_search(group_id, message, group_name, state):
     keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
     await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
     await UserStates.schedule_callback.set()
+
 
 def register_search_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(search_schedule)
