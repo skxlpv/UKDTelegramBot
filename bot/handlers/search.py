@@ -156,14 +156,7 @@ async def group_handler(message: types.Message, state: FSMContext):
         for index in range(len(departments)):
             if group_name == departments[index]['name']:
                 group_id = departments[index]['ID']
-                today_date = datetime.date.today().strftime("%d.%m.%Y")
-                schedule = await render_schedule(search_name=group_name, search_id=group_id,
-                                                 begin_date=today_date, end_date=today_date,
-                                                 isTeacher=False, state=state,
-                                                 user_id=message.from_user.id)
-                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
-                keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
-                await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
+                await group_search(group_id=group_id, message=message, group_name=group_name, state=state)
                 await UserStates.schedule_callback.set()
 
 
@@ -177,15 +170,7 @@ async def manual_search(message: types.Message, state: FSMContext):
     for index in range(len(departments)):
         if group_name.lower() == departments[index]['name'].lower():
             group_id = departments[index]['ID']
-            today_date = datetime.date.today().strftime("%d.%m.%Y")
-            schedule = await render_schedule(search_name=group_name, search_id=group_id,
-                                             begin_date=today_date, end_date=today_date,
-                                             isTeacher=False, state=state,
-                                             user_id=message.from_user.id)
-            await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
-            keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
-            await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
-            await UserStates.schedule_callback.set()
+            await group_search(group_id=group_id, message=message, group_name=group_name, state=state)
 
     if group_id is None:
         loader.logger.info(f'User {message.from_user.id} not found group "{message.text}"')
@@ -254,6 +239,17 @@ async def get_teacher_schedule(message: types.Message, state: FSMContext):
         loader.logger.info(f'User {message.from_user.id} not found teacher "{message.text}"')
         await message.answer(text=messages.TEACHER_NOT_FOUND)
 
+
+async def group_search(group_id, message, group_name, state):
+    today_date = datetime.date.today().strftime("%d.%m.%Y")
+    schedule = await render_schedule(search_name=group_name, search_id=group_id,
+                                     begin_date=today_date, end_date=today_date,
+                                     isTeacher=False, state=state,
+                                     user_id=message.from_user.id)
+    await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
+    keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=False)
+    await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
+    await UserStates.schedule_callback.set()
 
 def register_search_handlers(dispatcher: Dispatcher):
     dispatcher.register_message_handler(search_schedule)
