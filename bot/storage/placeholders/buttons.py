@@ -24,7 +24,7 @@ FAVORITE_UNPICK = 'Видалити з обраного'
 
 # search_keyboard
 ROLE = 'За роллю'
-NAME = 'За назвою'
+NAME = 'За назвою групи'
 
 # settings_keyboard
 SHOW_ADDITIONAL_COURSES = 'Показувати повторні курси: %s'
