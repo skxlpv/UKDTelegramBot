@@ -19,4 +19,4 @@ cleanup_trigger = CronTrigger(
 )
 
 scheduler.add_job(send_daily_schedule, trigger=morning_trigger, name="daily schedule")
-scheduler.add_job(database_cleanup, trigger=cleanup_trigger, name="cleanup")
+# scheduler.add_job(database_cleanup, trigger=cleanup_trigger, name="cleanup")

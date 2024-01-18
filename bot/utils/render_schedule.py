@@ -91,6 +91,10 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             link = today_lessons_list[lesson_index]['link']
             online = today_lessons_list[lesson_index]['online']
 
+            group = today_lessons_list[lesson_index]['group']
+            teacher_current = today_lessons_list[lesson_index]['teacher']
+            teacher_replacement = today_lessons_list[lesson_index]['replacement']
+
             if room == '' and online == 'Так':
                 room = 'Онлайн'
 
@@ -121,12 +125,10 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                     continue
 
             if isTeacher:
-                teacher = today_lessons_list[lesson_index]['object']
+                teacher = group
             else:
-                if today_lessons_list[lesson_index]['teacher'] != '':
-                    teacher = today_lessons_list[lesson_index]['teacher']
-                else:
-                    teacher = today_lessons_list[lesson_index]['replacement']
+                teacher = teacher_current if teacher_current != '' else teacher_replacement
+
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
 
             tags = re.findall('(<.*?>)', title)
