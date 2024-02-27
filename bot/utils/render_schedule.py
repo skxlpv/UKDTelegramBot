@@ -90,6 +90,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             comment4link = today_lessons_list[lesson_index]['comment4link']
             link = today_lessons_list[lesson_index]['link']
             online = today_lessons_list[lesson_index]['online']
+            replacement = today_lessons_list[lesson_index]['replacement']
 
             group = today_lessons_list[lesson_index]['group']
             teacher_current = today_lessons_list[lesson_index]['teacher']
@@ -100,11 +101,8 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
 
             emoji = '🕑'
 
-            tags = re.findall('(<.*?>)', comment4link)
-
-            for tag in tags:
-                comment4link = comment4link.replace(tag, '') if tag not in ('<b>', '</b>', '<i>', '</i>') \
-                    else comment4link
+            pattern = re.compile(r'<.*?>')
+            comment4link = re.sub(pattern, '', comment4link)
 
             lesson_type = f'({str_lesson_type})' if str_lesson_type != '' else str_lesson_type
             half = f'({str_half})' if str_half != '' else str_half
@@ -136,7 +134,10 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             for tag in tags:
                 title = title.replace(tag, '')
 
-            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher)
+            if replacement != '':
+                replacement = f'⚠️ {replacement} ⚠️'
+
+            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher, replacement)
 
             if comment4link == '' and link == '':
                 pass
