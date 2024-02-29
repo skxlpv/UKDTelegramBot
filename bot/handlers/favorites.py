@@ -2,8 +2,10 @@ import datetime
 
 from aiogram import types, Bot
 from aiogram.dispatcher import FSMContext
+from aiogram.types import user
 
 from bot.database.schedule_requests import get_from_collection, delete_favorite
+from bot.database.serializers import process_text
 from bot.handlers import menu
 from bot.keyboards.inline.schedule_keyboard import get_schedule_keyboard
 from bot.keyboards.reply.favorite_keyboard import favorite_keyboard
@@ -67,7 +69,8 @@ async def get_favorite(message: types.Message, state: FSMContext):
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,
                                     isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE,
+                                       reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
@@ -86,7 +89,8 @@ async def get_favorite(message: types.Message, state: FSMContext):
             # if schedule validated (favorite exist)
             if await schedule_exist(user=message.from_user.id, group_id=group_id,
                                     isTeacher=isTeacher, schedule=schedule):
-                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE, reply_markup=menu_keyboard)
+                await bot.send_message(chat_id=message.from_user.id, text=messages.YOUR_SCHEDULE,
+                                       reply_markup=menu_keyboard)
                 keyboard = get_schedule_keyboard(user=message.from_user.id, group_id=group_id, isTeacher=isTeacher)
                 await message.answer(schedule, parse_mode='HTML', reply_markup=keyboard, disable_web_page_preview=True)
                 await UserStates.schedule_callback.set()
@@ -97,11 +101,16 @@ async def get_favorite(message: types.Message, state: FSMContext):
 
 
 async def schedule_exist(user, isTeacher, group_id, schedule):
-    if schedule in ('90',):
-        await bot.send_message(chat_id=user,
-                               text=messages.NOT_FOUND_OR_DELETED,
-                               reply_markup=menu_keyboard)
-        await UserStates.menu_handler.set()
-        delete_favorite(user=user, group_id=group_id, isTeacher=isTeacher)
+    if schedule in ('90', messages.ERROR_NOT_EXIST, messages.ERROR_BLOCKED, messages.ERROR_ERROR,
+                    messages.ERROR_SERVER):
+        await delete_favorite_not_found(user=user, group_id=group_id, isTeacher=isTeacher)
         return False
     return True
+
+
+async def delete_favorite_not_found(user, isTeacher, group_id):
+    await bot.send_message(chat_id=user,
+                           text=messages.NOT_FOUND_OR_DELETED,
+                           reply_markup=menu_keyboard)
+    await UserStates.menu_handler.set()
+    delete_favorite(user=user, group_id=group_id, isTeacher=isTeacher)

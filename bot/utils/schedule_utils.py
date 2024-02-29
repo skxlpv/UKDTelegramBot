@@ -126,11 +126,16 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
 
 
 async def schedule_exist(user, isTeacher, schedule):
-    if schedule in ('90',):
-        await bot.send_message(chat_id=user,
-                               text=messages.NOT_FOUND_OR_DELETED,
-                               reply_markup=menu_keyboard)
-        await UserStates.menu_handler.set()
-        schedule_requests.delete_primary(user=user)
+    if schedule in ('90', messages.ERROR_NOT_EXIST, messages.ERROR_BLOCKED, messages.ERROR_ERROR,
+                    messages.ERROR_SERVER):
+        await delete_primary_not_found(user=user)
         return False
     return True
+
+
+async def delete_primary_not_found(user):
+    await bot.send_message(chat_id=user,
+                           text=messages.NOT_FOUND_OR_DELETED,
+                           reply_markup=menu_keyboard)
+    await UserStates.menu_handler.set()
+    schedule_requests.delete_primary(user=user)
