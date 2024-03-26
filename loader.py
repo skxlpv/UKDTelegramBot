@@ -30,7 +30,7 @@ class MyRotatingFileHandler(RotatingFileHandler):
 
 
 file_handler = MyRotatingFileHandler('bot/storage/logs/bot_log.log',
-                                     maxBytes=1*1024*1024, backupCount=0)
+                                     maxBytes=15*1024*1024, backupCount=2)
 
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.WARNING)

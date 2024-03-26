@@ -37,4 +37,4 @@ services:
     build: .
     volumes:
       - ./:/app
-      - ./bot/storage/logs:/app/storage/logs
+      - ./bot/storage/logs:/app/bot/storage/logs
