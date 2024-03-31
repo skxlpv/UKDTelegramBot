@@ -115,9 +115,8 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 current_date = object_date
                 day_of_week += next_day_of_week
 
-            if title == '':
+            if 'ПК' in group:
                 if hasAdditionalCoursesOption:
-                    title = today_lessons_list[lesson_index]['reservation']
                     emoji = '🌀'
                 else:
                     continue
