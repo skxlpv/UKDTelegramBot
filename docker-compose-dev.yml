@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   mongodb:
-    restart: always
     image: mongo:4.4.6
     env_file:
       - .env
@@ -29,12 +28,3 @@ services:
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
     depends_on:
       - mongodb
-
-  bot:
-    restart: always
-    depends_on:
-      - mongodb
-    build: .
-    volumes:
-      - ./:/app
-      - ./bot/storage/logs:/app/bot/storage/logs

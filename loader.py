@@ -21,7 +21,7 @@ class MyRotatingFileHandler(RotatingFileHandler):
 
         with open(self.baseFilename, 'r') as f:
             lines = f.readlines()
-            last_lines = lines[-100:]
+            last_lines = lines[-10:]
 
         super().doRollover()
 
@@ -30,7 +30,7 @@ class MyRotatingFileHandler(RotatingFileHandler):
 
 
 file_handler = MyRotatingFileHandler('bot/storage/logs/bot_log.log',
-                                     maxBytes=15*1024*1024, backupCount=0)
+                                     maxBytes=15*1024*1024, backupCount=2)
 
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.WARNING)

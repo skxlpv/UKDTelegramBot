@@ -90,17 +90,20 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             comment4link = today_lessons_list[lesson_index]['comment4link']
             link = today_lessons_list[lesson_index]['link']
             online = today_lessons_list[lesson_index]['online']
+            replacement = today_lessons_list[lesson_index]['replacement']
+            reservation = today_lessons_list[lesson_index]['reservation']
+
+            group = today_lessons_list[lesson_index]['group']
+            teacher_current = today_lessons_list[lesson_index]['teacher']
+            teacher_replacement = today_lessons_list[lesson_index]['replacement']
 
             if room == '' and online == 'Так':
                 room = 'Онлайн'
 
             emoji = '🕑'
 
-            tags = re.findall('(<.*?>)', comment4link)
-
-            for tag in tags:
-                comment4link = comment4link.replace(tag, '') if tag not in ('<b>', '</b>', '<i>', '</i>') \
-                    else comment4link
+            pattern = re.compile(r'<.*?>')
+            comment4link = re.sub(pattern, '', comment4link)
 
             lesson_type = f'({str_lesson_type})' if str_lesson_type != '' else str_lesson_type
             half = f'({str_half})' if str_half != '' else str_half
@@ -113,20 +116,17 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 current_date = object_date
                 day_of_week += next_day_of_week
 
-            if title == '':
+            if 'ПК' in group:
                 if hasAdditionalCoursesOption:
-                    title = today_lessons_list[lesson_index]['reservation']
                     emoji = '🌀'
                 else:
                     continue
 
             if isTeacher:
-                teacher = today_lessons_list[lesson_index]['object']
+                teacher = group
             else:
-                if today_lessons_list[lesson_index]['teacher'] != '':
-                    teacher = today_lessons_list[lesson_index]['teacher']
-                else:
-                    teacher = today_lessons_list[lesson_index]['replacement']
+                teacher = teacher_current if teacher_current != '' else teacher_replacement
+
             teacher = teacher.replace(" (пог.)", "").replace("*", "").replace(".", "")
 
             tags = re.findall('(<.*?>)', title)
@@ -134,7 +134,15 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             for tag in tags:
                 title = title.replace(tag, '')
 
-            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher)
+            if replacement != '':
+                replacement = f'⚠️ {replacement} ⚠️'
+
+            if reservation:
+                pattern = re.compile(r'<.*?>')
+                reservation = re.sub(pattern, '', reservation)
+                title = reservation
+
+            lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher, replacement)
 
             if comment4link == '' and link == '':
                 pass
