@@ -91,6 +91,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             link = today_lessons_list[lesson_index]['link']
             online = today_lessons_list[lesson_index]['online']
             replacement = today_lessons_list[lesson_index]['replacement']
+            reservation = today_lessons_list[lesson_index]['reservation']
 
             group = today_lessons_list[lesson_index]['group']
             teacher_current = today_lessons_list[lesson_index]['teacher']
@@ -135,6 +136,11 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
 
             if replacement != '':
                 replacement = f'⚠️ {replacement} ⚠️'
+
+            if reservation:
+                pattern = re.compile(r'<.*?>')
+                reservation = re.sub(pattern, '', reservation)
+                title = reservation
 
             lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher, replacement)
 
