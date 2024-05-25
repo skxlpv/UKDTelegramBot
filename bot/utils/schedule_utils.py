@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta
+import re
 
 import aiogram.utils.exceptions
 from aiogram import Bot
@@ -139,3 +140,36 @@ async def delete_primary_not_found(user):
                            reply_markup=menu_keyboard)
     await UserStates.menu_handler.set()
     schedule_requests.delete_primary(user=user)
+
+
+def parse_text_or_link(text):
+    # Check if the text looks like an HTML anchor tag
+    if re.match(r'^<a href=', text):
+        # Attempt to extract the link and text
+        match = re.search(r'<a href=(.*?)>(.*?)</a>', text)
+
+        if match:
+            # Extracting the link (href attribute value)
+            link = match.group(1)
+
+            # Extracting the text inside the anchor tag
+            text = match.group(2)
+
+            pattern = re.compile(r'<.*?>')
+            text = re.sub(pattern, '', text)
+
+            return text.strip(), link
+        else:
+            return '', ''
+    else:
+        pattern = re.compile(r'<.*?>')
+        text = re.sub(pattern, '', text)
+        # If it's not an anchor tag, treat the whole string as text
+        return text.strip(), ''
+
+
+def parse_empty_tags(text):
+    pattern = r'<[^>]+><[^>]+>'
+
+    text_without_empty_tags = re.sub(pattern, '', text)
+    return text_without_empty_tags.strip()

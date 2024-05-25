@@ -7,7 +7,7 @@ from aiogram.dispatcher import FSMContext
 import loader
 from bot.database.pref_requests import get_preferences
 from bot.storage.placeholders import messages
-from bot.utils.schedule_utils import day_of_week_dict
+from bot.utils.schedule_utils import day_of_week_dict, parse_text_or_link, parse_empty_tags
 
 
 async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date: datetime.date,
@@ -74,6 +74,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
 
     # generate list of lessons
     if len(today_lessons_list) > 0:
+        reservations_set = set()
         day_of_week = 0
         current_date = 0
         user_prefs = get_preferences(user_id)
@@ -102,9 +103,6 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
 
             emoji = '🕑'
 
-            pattern = re.compile(r'<.*?>')
-            comment4link = re.sub(pattern, '', comment4link)
-
             lesson_type = f'({str_lesson_type})' if str_lesson_type != '' else str_lesson_type
             half = f'({str_half})' if str_half != '' else str_half
 
@@ -116,7 +114,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
                 current_date = object_date
                 day_of_week += next_day_of_week
 
-            if 'ПК' in group:
+            if 'ПК' in group or 'Складання' in reservation:
                 if hasAdditionalCoursesOption:
                     emoji = '🌀'
                 else:
@@ -137,21 +135,36 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             if replacement != '':
                 replacement = f'⚠️ {replacement} ⚠️'
 
-            if reservation:
+            if reservation and title == '':
                 pattern = re.compile(r'<.*?>')
                 reservation = re.sub(pattern, '', reservation)
-                title = reservation
+                if reservation not in reservations_set:
+                    reservations_set.add(reservation)
+                    title = reservation + '\n'
+                    time = 'УВЕСЬ ДЕНЬ'
+                else:
+                    continue
 
             lesson = messages.LESSON % (emoji, time, room, title, lesson_type, half, teacher, replacement)
+
+            lesson = parse_empty_tags(lesson) + '\n'
+
+            if link == '' and comment4link != '':
+                _comment, _link = parse_text_or_link(comment4link)
+                if _comment != '':
+                    if _link != '':
+                        comment4link = f'<a href="{_link}">{_comment}</a>'
+                    else:
+                        comment4link = _comment
 
             if comment4link == '' and link == '':
                 pass
             elif comment4link == '':
                 lesson += f'{link}\n'
             elif link == '':
-                lesson += f'\n{comment4link}\n'
+                lesson += f'{comment4link}\n'
             else:
-                lesson += f'\n{comment4link}\n'\
+                lesson += f'\n{comment4link}\n' \
                           f'{link}\n'
 
             list_of_lessons.append(lesson)
@@ -166,6 +179,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
     # glue all the lessons into one single message
     for each in list_of_lessons:
         message_of_lessons += each + '\n'
+        message_of_lessons.strip()
 
     message_of_lessons += messages.CLASSES_QUANTITY % lessons_quantity
 
