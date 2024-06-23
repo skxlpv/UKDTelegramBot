@@ -149,22 +149,20 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
 
             lesson = parse_empty_tags(lesson) + '\n'
 
-            if link == '' and comment4link != '':
-                _comment, _link = parse_text_or_link(comment4link)
-                if _comment != '':
-                    if _link != '':
-                        comment4link = f'<a href="{_link}">{_comment}</a>'
-                    else:
-                        comment4link = _comment
+            _comment, _link = parse_text_or_link(comment4link)
 
             if comment4link == '' and link == '':
                 pass
             elif comment4link == '':
                 lesson += f'{link}\n'
             elif link == '':
-                lesson += f'{comment4link}\n'
+                if _comment != '':
+                    if _link != '':
+                        lesson += f'<a href="{_link}">{_comment}</a>'
+                    else:
+                        lesson += f'{_comment}\n'
             else:
-                lesson += f'\n{comment4link}\n' \
+                lesson += f'\n{_comment}\n' \
                           f'{link}\n'
 
             list_of_lessons.append(lesson)
