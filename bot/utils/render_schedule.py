@@ -56,17 +56,35 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
         request_mode = 'teacher'
     else:
         request_mode = 'group'
-    obj = requests.get(
-        f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode={request_mode}'
-        f'&OBJ_ID={search_id}&OBJ_name=&dep_name=&ros_text=separated&begin_date={begin_date}&end_date={end_date}'
-        f'&req_format=json&coding_mode=UTF8&bs=ok').json()
 
-    if 'error' in obj['psrozklad_export']:
-        code = obj['psrozklad_export']['code']
-        loader.logger.error(f'ERROR OCCURRED: {code}: User {user_id} tried to get data from API with '
-                            f'search_id: {search_id}, search_name: {search_name} teacher: {isTeacher}, '
-                            f'begin_date: {begin_date}, end_date: {end_date}')
-        return code
+    try:
+        response = requests.get(
+            f'http://195.162.83.28/cgi-bin/timetable_export.cgi?req_type=rozklad&req_mode={request_mode}'
+            f'&OBJ_ID={search_id}&OBJ_name=&dep_name=&ros_text=separated&begin_date={begin_date}&end_date={end_date}'
+            f'&req_format=json&coding_mode=UTF8&bs=ok',
+            timeout=5
+        )
+
+        if response.status_code != 200:
+            loader.logging.error(f'Failed request: {response.status_code}')
+            return f"Error: The request failed with status code {response.status_code}"
+
+        obj = response.json()
+
+        if 'error' in obj['psrozklad_export']:
+            code = obj['psrozklad_export']['code']
+            loader.logger.error(f'ERROR OCCURRED: {code}: User {user_id} tried to get data from API with '
+                                f'search_id: {search_id}, search_name: {search_name} teacher: {isTeacher}, '
+                                f'begin_date: {begin_date}, end_date: {end_date}')
+            return f"Error: The API returned code {code}. Please check your input and try again."
+
+    except requests.exceptions.Timeout:
+        loader.logging.error(f"Request timed out for user {user_id}")
+        return "Упс! Схоже, запит перевищив допустимий час обробки. Спробуйте ще раз згодом!"
+
+    except requests.exceptions.RequestException as e:
+        loader.logging.error(f"Request error occurred: {str(e)}")
+        return "Упс. Схоже, виникла невідома помилка мережі. Спробуйте ще раз!"
 
     # generate group title
     today_lessons_list = obj['psrozklad_export']['roz_items']
