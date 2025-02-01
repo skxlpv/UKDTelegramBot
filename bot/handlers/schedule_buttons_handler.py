@@ -19,29 +19,22 @@ async def callback_schedule_buttons(callback: types.CallbackQuery, state: FSMCon
     group_id = data['group_id']
     match callback.data:
         case 'mn':
-            await callback.answer(text=callbacks.MONDAY)
             await day_schedule_display(number=0, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'ts':
-            await callback.answer(text=callbacks.TUESDAY)
             await day_schedule_display(number=1, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'wd':
-            await callback.answer(text=callbacks.WEDNESDAY)
             await day_schedule_display(number=2, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'th':
-            await callback.answer(text=callbacks.THURSDAY)
             await day_schedule_display(number=3, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'fr':
-            await callback.answer(text=callbacks.FRIDAY)
             await day_schedule_display(number=4, callback=callback, group_id=group_id, isTeacher=isTeacher, state=state)
         case 'week':
-            await callback.answer(text=callbacks.WEEK)
             try:
                 await week_schedule_display(week='current', callback=callback,
                                             group_id=group_id, isTeacher=isTeacher, state=state)
             except aiogram.utils.exceptions.BadRequest:
                 await callback.message.answer(text=callbacks.TOO_LONG)
         case 'next_week':
-            await callback.answer(text=callbacks.NEXT_WEEK)
             try:
                 await week_schedule_display(week='next', callback=callback,
                                             group_id=group_id, isTeacher=isTeacher, state=state)
