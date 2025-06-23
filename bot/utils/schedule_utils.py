@@ -127,7 +127,7 @@ async def day_schedule_display(number, callback, group_id, isTeacher, state: FSM
 
 
 async def schedule_exist(user, isTeacher, schedule):
-    if schedule in ('90', messages.ERROR_NOT_EXIST, messages.ERROR_BLOCKED, messages.ERROR_ERROR,
+    if schedule in ('90', messages.ERROR_OBJECT_NOT_EXIST, messages.ERROR_BLOCKED, messages.ERROR_ERROR,
                     messages.ERROR_SERVER):
         await delete_primary_not_found(user=user)
         return False
