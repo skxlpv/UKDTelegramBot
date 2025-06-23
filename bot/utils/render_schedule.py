@@ -23,7 +23,7 @@ async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date
     match schedule.replace('-', ''):
         case '1' | '4':
             schedule = messages.ERROR_NOT_EXIST
-case '90':
+        case '90':
             schedule = messages.ERROR_OBJECT_NOT_EXIST
         case '2' | '3' | '6':
             schedule = messages.ERROR_BLOCKED
