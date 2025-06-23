@@ -20,7 +20,7 @@ async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date
     schedule = get_schedule(search_name=search_name, search_id=search_id, isTeacher=isTeacher,
                             begin_date=begin_date, end_date=end_date, user_id=user_id)
 
-    match schedule:
+    match schedule.replace('-', ''):
         case '1' | '4' | '90':
             schedule = messages.ERROR_NOT_EXIST
 
