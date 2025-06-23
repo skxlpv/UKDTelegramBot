@@ -101,7 +101,7 @@ async def get_favorite(message: types.Message, state: FSMContext):
 
 
 async def schedule_exist(user, isTeacher, group_id, schedule):
-    if schedule in ('90', messages.ERROR_NOT_EXIST):
+    if schedule in ('90', messages.ERROR_OBJECT_NOT_EXIST):
         await delete_favorite_not_found(user=user, group_id=group_id, isTeacher=isTeacher)
         return False
     return True
