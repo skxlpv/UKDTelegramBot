@@ -76,7 +76,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
             loader.logger.error(f'ERROR OCCURRED: {code}: User {user_id} tried to get data from API with '
                                 f'search_id: {search_id}, search_name: {search_name} teacher: {isTeacher}, '
                                 f'begin_date: {begin_date}, end_date: {end_date}')
-            return f"Error: The API returned code {code}. Please check your input and try again."
+            return code
 
     except requests.exceptions.Timeout:
         loader.logging.error(f"Request timed out for user {user_id}")
