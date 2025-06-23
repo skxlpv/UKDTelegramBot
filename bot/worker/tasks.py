@@ -36,7 +36,7 @@ async def send_daily_schedule():
                     group_name = user_primary['teacher_name']
                     isTeacher = True
                 text = get_schedule(search_name=group_name, search_id=group_id, isTeacher=isTeacher, user_id=user_id)
-                if text is None or text.isnumeric():
+                if text is None or text.replace('-', '').isnumeric():
                     continue
                 else:
                     try:
