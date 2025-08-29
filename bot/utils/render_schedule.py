@@ -201,6 +201,7 @@ def get_schedule(search_name, search_id, isTeacher, user_id,
         message_of_lessons.strip()
 
     message_of_lessons += messages.CLASSES_QUANTITY % lessons_quantity
+    message_of_lessons += "\n\nРозклад переїхав до @TechSupportUKD_bot!"
 
     # return a single string of lessons
     loader.logger.info(f'User {user_id} got data from API with search_id: {search_id}, '
