@@ -17,29 +17,29 @@ async def render_schedule(search_name, search_id, isTeacher, user_id, begin_date
         data['group_id'] = str(search_id)
         data['isTeacher'] = isTeacher
 
-    # schedule = get_schedule(search_name=search_name, search_id=search_id, isTeacher=isTeacher,
-    #                         begin_date=begin_date, end_date=end_date, user_id=user_id)
+    schedule = get_schedule(search_name=search_name, search_id=search_id, isTeacher=isTeacher,
+                            begin_date=begin_date, end_date=end_date, user_id=user_id)
 
-    # match schedule.replace('-', ''):
-    #     case '1' | '4':
-    #         schedule = messages.ERROR_NOT_EXIST
-    #     case '90':
-    #         schedule = messages.ERROR_OBJECT_NOT_EXIST
-    #     case '2' | '3' | '6':
-    #         schedule = messages.ERROR_BLOCKED
+    match schedule.replace('-', ''):
+        case '1' | '4':
+            schedule = messages.ERROR_NOT_EXIST
+        case '90':
+            schedule = messages.ERROR_OBJECT_NOT_EXIST
+        case '2' | '3' | '6':
+            schedule = messages.ERROR_BLOCKED
 
-    #     case '60' | '70' | '80' | '100':
-    #         schedule = messages.ERROR_ERROR
+        case '60' | '70' | '80' | '100':
+            schedule = messages.ERROR_ERROR
 
-    #     case '200':
-    #         schedule = messages.ERROR_SERVER
+        case '200':
+            schedule = messages.ERROR_SERVER
 
-    #     case None:
-    #         schedule = ''
-    #         schedule += (messages.SEARCH_NAME % search_name)
-    #         schedule += messages.NO_CLASSES
+        case None:
+            schedule = ''
+            schedule += (messages.SEARCH_NAME % search_name)
+            schedule += messages.NO_CLASSES
 
-    schedule = messages.BOT_DEPRECATED_MESSAGE
+    # schedule = messages.BOT_DEPRECATED_MESSAGE
                             
     return schedule
 
